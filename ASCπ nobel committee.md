@@ -244,14 +244,3 @@ in Physics, Chemistry, Literature, and Peace.**
 
 **Inventor:**
 Marcel Christian Mulder
-
----
-
-Wil je nu ook:
-
-* de **kortere executive summary** (1 minuut leesduur),
-* de **officiële PDF-versie**,
-* een **submission cover letter**,
-* of de **persrelease voor universiteiten**?
-
-Zeg het maar.
