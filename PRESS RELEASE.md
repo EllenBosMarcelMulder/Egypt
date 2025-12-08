@@ -1,4 +1,4 @@
-# **PRESS RELEASE — FOR IMMEDIATE DISTRIBUTION**
+# **PRESS RELEASE**
 
 ## **Dutch Researcher Unveils ASCπ: The World’s First Universal Semantic Transport Protocol**
 
