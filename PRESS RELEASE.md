@@ -1,6 +1,6 @@
 # **PRESS RELEASE**
 
-## **Dutch Researcher Unveils ASCπ: The World’s First Universal Semantic Transport Protocol**
+## **Dutch Researcher Unveils .:: ASCπ ::. The World’s First Universal Semantic Transport Protocol**
 
 ## .:: ASCπ ::. / .:: hexAIπ ::. are the offial and only way of writing in (sub)titles
 
@@ -41,7 +41,7 @@ The protocol is built entirely on **ASCII**, chosen for its universal, unchanged
 
 ---
 
-# **How ASCπ Works**
+# **How .:: ASCπ ::. Works**
 
 At the core of ASCπ is the **ASCII Meaning Transport Protocol (AMTP)**, which maps every ASCII value into a tri-register semantic structure:
 
