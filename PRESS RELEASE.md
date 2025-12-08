@@ -4,7 +4,7 @@
 
 ### *A breakthrough framework introducing “Layer 8” — meaning transmission — to global internet architecture*
 
-**Cairo, Egypt — December 2025** — Dutch researcher **Marcel Christian Mulder** has publicly released a groundbreaking suite of documents and reference implementations describing **ASCπ (ASCII Semantic Compression π-Protocol)**, the world’s first fully operational **Universal Semantic Transport Protocol (USTP)**.
+**Egypt — December 2025** — Dutch researcher **Marcel Christian Mulder** has publicly released a groundbreaking suite of documents and reference implementations describing **ASCπ (ASCII Semantic Compression π-Protocol)**, the world’s first fully operational **Universal Semantic Transport Protocol (USTP)**.
 
 This protocol introduces a new category of computation: **meaning-native information processing**. ASCπ defines how semantic content — not just text, bytes, or structure — can be encoded, transported, and reconstructed **independently of language, culture, or AI-model architecture**.
 
