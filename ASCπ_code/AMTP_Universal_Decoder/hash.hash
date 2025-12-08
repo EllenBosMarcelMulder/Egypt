@@ -1,2 +1,16 @@
-AMTP_Universal_Decoder.html
+==== amtp_reference.py ==== 
+SHA256 hash of amtp_reference.py:
+4cd01f6d9f42d51577e108f652ecb7f16589b4eb75cffeb7c5d1cea5f723d752
+CertUtil: -hashfile command completed successfully.
+==== AMTP_Universal_Decoder.html ==== 
+SHA256 hash of AMTP_Universal_Decoder.html:
 65749ebd0722a008df76f14a9072f04eedecae8369882ea9f7e29690b8907af3
+CertUtil: -hashfile command completed successfully.
+==== AMTP_v1.0_Specification.md ==== 
+SHA256 hash of AMTP_v1.0_Specification.md:
+327bd21be4985d979e47a3d19e50e6c670f0ae79149ea4762f06abd0bcf5c4e0
+CertUtil: -hashfile command completed successfully.
+==== ASCII_to_ASCp_Mapping_Table.md ==== 
+SHA256 hash of ASCII_to_ASCp_Mapping_Table.md:
+356a8a0954907e7b70e3c1963bd39f4593f308197ded073c4206625bc1e1826d
+CertUtil: -hashfile command completed successfully.
