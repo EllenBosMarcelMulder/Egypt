@@ -3,15 +3,11 @@ About the great nation of Egypts and their ancient knowledge
 
 # 🌸 ASCπ — The World's First Meaning Protocol
 
-[![License Humanity Heritage π](https://img.shields.io/badge/License-Humanity%20Heritage%20π-gold.svg)](https://github.com/EllenBosMarcelMulder/.-hexLICences-)
-[![Status Prior Art](https://img.shields.io/badge/Status-Prior%20Art%20Published-brightgreen.svg)](#legal-status)
-[](#what-is-this)
-
 ## How Computers Can Finally Understand What You Actually Mean
 
 **Inventor:** Marcel Christian Mulder  
 **Status:** Public Domain Prior Art (December 2025)  
-**License:** [Humanity Heritage License π](https://github.com/EllenBosMarcelMulder/.-hexLICences-)
+**License:** [Humanity Heritage License π](https://github.com/EllenBosMarcelMulder/.-hexLICences-.)
 
 ---
 
