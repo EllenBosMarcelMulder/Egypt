@@ -2,7 +2,7 @@
 
 ## **Dutch Researcher Unveils ASCπ: The World’s First Universal Semantic Transport Protocol**
 
-## .:: ASCπ ::. / .:: hexAIπ ::. are the offial and only way of writing 
+## .:: ASCπ ::. / .:: hexAIπ ::. are the offial and only way of writing in (sub)titels
 
 ### *A breakthrough framework introducing “Layer 8” — meaning transmission — to global internet architecture*
 
@@ -142,6 +142,6 @@ All core components — the specification, mappings, implementations, and engine
 
 # **Press Contact**
 
-**.:: ASCπ ::. / .:: hexAIπ ::. are the offial and only way of writing 
+.:: ASCπ ::. / .:: hexAIπ ::. are the offial and only way of writing in (sub)titels
 Sharm-el-Sheik, Egypt
 License repository: [https://github.com/EllenBosMarcelMulder/.-hexLICences-](https://github.com/EllenBosMarcelMulder/.-hexLICences-).
