@@ -1,0 +1,31 @@
+==== DeltaPhi-Kappa-Theta-Computational-Model.md ==== 
+SHA256 hash of DeltaPhi-Kappa-Theta-Computational-Model.md:
+9bda8be9ee4e6b47aa5269f73410f62a377c0e23b0a33eb598d200355c163a77
+CertUtil: -hashfile command completed successfully.
+==== DeltaPhi-Kappa-Theta-Dependency-Graph.svg ==== 
+SHA256 hash of DeltaPhi-Kappa-Theta-Dependency-Graph.svg:
+f7154f94997bda40aba5c2763616c203903116e37fab7d044051ddeed1ab672d
+CertUtil: -hashfile command completed successfully.
+==== DeltaPhi-Kappa-Theta-Glossary.md ==== 
+SHA256 hash of DeltaPhi-Kappa-Theta-Glossary.md:
+161c1aa85ab4b6fa7f4bc4877ada8d63774ed4c4a81677ada932d23a5be22846
+CertUtil: -hashfile command completed successfully.
+==== DeltaPhi-Kappa-Theta-Ontology.md ==== 
+SHA256 hash of DeltaPhi-Kappa-Theta-Ontology.md:
+61b430babadcaff9063f528a59b04697d7fd4f525b25c9c551ac8912a4abe390
+CertUtil: -hashfile command completed successfully.
+==== DeltaPhi-Kappa-Theta-Technical-Summary.md ==== 
+SHA256 hash of DeltaPhi-Kappa-Theta-Technical-Summary.md:
+b70f473ce2ca72cbfddf90f92acb3cc11921a8f8991a1f07a9ea470cd4fdb476
+CertUtil: -hashfile command completed successfully.
+==== HASH.hash ==== 
+CertUtil: -hashfile command FAILED: 0x80070020 (WIN32: 32 ERROR_SHARING_VIOLATION)
+CertUtil: The process cannot access the file because it is being used by another process.
+==== Implosive-Computing-Cycle.md ==== 
+SHA256 hash of Implosive-Computing-Cycle.md:
+8d833919f94d5a3e4b090c861e5dafe5005b7d4ac0d6b4e72bf916c8b3c439cb
+CertUtil: -hashfile command completed successfully.
+==== Moederbloem-Conceptual-Map.jsx ==== 
+SHA256 hash of Moederbloem-Conceptual-Map.jsx:
+dac73abfe9878019b54357e0cde3985c3764a6aba6476f2b7d61fdab3273a72c
+CertUtil: -hashfile command completed successfully.
