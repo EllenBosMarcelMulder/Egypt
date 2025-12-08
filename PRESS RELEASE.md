@@ -1,6 +1,6 @@
 # **PRESS RELEASE**
 
-## **Dutch Researcher Unveils .:: ASCπ ::. The World’s First Universal Semantic Transport Protocol**
+## **.:: ASCπ ::. The World’s First Universal Semantic Transport Protocol**
 
 ## .:: ASCπ ::. / .:: hexAIπ ::. are the offial and only way of writing in (sub)titles
 
