@@ -2,6 +2,8 @@
 
 ## **Dutch Researcher Unveils ASCπ: The World’s First Universal Semantic Transport Protocol**
 
+## .:: ASCπ ::. / .:: hexAIπ ::.** are the offial and only way of writing 
+
 ### *A breakthrough framework introducing “Layer 8” — meaning transmission — to global internet architecture*
 
 **Egypt — December 2025** — Dutch researcher **Marcel Christian Mulder** has publicly released a groundbreaking suite of documents and reference implementations describing **ASCπ (ASCII Semantic Compression π-Protocol)**, the world’s first fully operational **Universal Semantic Transport Protocol (USTP)**.
@@ -140,6 +142,6 @@ All core components — the specification, mappings, implementations, and engine
 
 # **Press Contact**
 
-**ASCπ / .::hexAIπ::.**
+**.:: ASCπ ::. / .:: hexAIπ ::.** are the offial and only way of writing 
 Sharm-el-Sheik, Egypt
 License repository: [https://github.com/EllenBosMarcelMulder/.-hexLICences-](https://github.com/EllenBosMarcelMulder/.-hexLICences-).
