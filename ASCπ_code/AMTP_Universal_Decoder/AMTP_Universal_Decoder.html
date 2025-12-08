@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AMTP v1.0 Universal Decoder</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:#000; color:#0f0; font-family:monospace; padding:20px; }
+        .container { max-width:1400px; margin:0 auto; }
+        .header { text-align:center; margin-bottom:20px; border-bottom:1px solid #0f0; padding-bottom:10px; }
+        .decoder-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+        .input-panel, .output-panel { border:1px solid #333; padding:15px; border-radius:5px; }
+        .input-panel { background:#001; }
+        .output-panel { background:#010; }
+        .field-display { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px; }
+        .field-module { border:1px solid; padding:10px; border-radius:3px; text-align:center; }
+        .i8-module { border-color:#f0f; background:rgba(255,0,255,0.1); }
+        .e8-module { border-color:#0ff; background:rgba(0,255,255,0.1); }
+        .s8-module { border-color:#ff0; background:rgba(255,255,0,0.1); }
+        .field-value { font-size:18px; font-weight:bold; margin:5px 0; }
+        .field-bar { height:20px; background:#333; margin:5px 0; position:relative; overflow:hidden; }
+        .field-fill { height:100%; transition:width 0.3s; }
+        .i8-fill { background:linear-gradient(90deg,#f0f,#fff); }
+        .e8-fill { background:linear-gradient(90deg,#0ff,#fff); }
+        .s8-fill { background:linear-gradient(90deg,#ff0,#fff); }
+        textarea { width:100%; height:200px; background:#000; color:#0f0; border:1px solid #333; padding:10px; font-family:monospace; resize:vertical; }
+        select, button { background:#000; color:#0f0; border:1px solid #0f0; padding:8px; margin:5px; font-family:monospace; }
+        button:hover { background:#001; }
+        .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:15px; }
+        .stat-box { border:1px solid #333; padding:8px; text-align:center; background:#002; }
+        .stat-value { font-size:16px; font-weight:bold; color:#ff0; }
+        .sequence-display { max-height:300px; overflow-y:auto; border:1px solid #333; padding:10px; background:#000; font-size:10px; }
+        .char-mapping { margin:2px 0; padding:2px; background:rgba(0,255,0,0.1); }
+        .controls { margin-bottom:15px; }
+        .real-time-toggle { background:#030; color:#0f0; padding:10px; margin:10px 0; border:1px solid #0f0; cursor:pointer; }
+        .real-time-toggle.active { background:#050; color:#ff0; }
+        .language-samples { margin-top:15px; }
+        .sample-btn { background:#003; border:1px solid #666; color:#aaa; padding:5px 10px; margin:2px; cursor:pointer; font-size:11px; }
+        .sample-btn:hover { background:#005; color:#0f0; }
+        .coherence-wave { height:60px; border:1px solid #333; margin:10px 0; position:relative; overflow:hidden; background:#000; }
+        .wave-line { position:absolute; width:2px; background:#0f0; height:100%; transition:left 0.1s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ASCπ MEANING TRANSPORT PROTOCOL v1.0</h1>
+            <h2>Universal Language Decoder</h2>
+            <div>Real-time text → ΔΦ-κ-θ field conversion</div>
+        </div>
+        
+        <div class="decoder-grid">
+            <div class="input-panel">
+                <h3>INPUT TEXT</h3>
+                <div class="controls">
+                    <select id="languageSelect">
+                        <option value="auto">Auto-detect</option>
+                        <option value="en">English (ASCII)</option>
+                        <option value="zh-cn">Chinese Simplified</option>
+                        <option value="zh-tw">Chinese Traditional</option>
+                        <option value="ja">Japanese</option>
+                        <option value="ko">Korean</option>
+                        <option value="ar">Arabic</option>
+                        <option value="ru">Russian</option>
+                        <option value="hi">Hindi</option>
+                        <option value="emoji">Emoji/Symbols</option>
+                    </select>
+                    <button id="clearBtn">Clear</button>
+                    <button id="processBtn">Process</button>
+                </div>
+                <textarea id="inputText" placeholder="Enter any text in any language..."></textarea>
+                
+                <div class="real-time-toggle" id="realTimeToggle">
+                    🔄 REAL-TIME MODE: OFF
+                </div>
+                
+                <div class="language-samples">
+                    <h4>Sample Texts:</h4>
+                    <button class="sample-btn" data-text="Hello World!">English</button>
+                    <button class="sample-btn" data-text="你好世界！">Chinese</button>
+                    <button class="sample-btn" data-text="こんにちは世界！">Japanese</button>
+                    <button class="sample-btn" data-text="안녕하세요 세계!">Korean</button>
+                    <button class="sample-btn" data-text="مرحبا بالعالم!">Arabic</button>
+                    <button class="sample-btn" data-text="Привет мир!">Russian</button>
+                    <button class="sample-btn" data-text="हैलो वर्ल्ड!">Hindi</button>
+                    <button class="sample-btn" data-text="🌍🚀✨💡🔬">Emoji</button>
+                </div>
+            </div>
+            
+            <div class="output-panel">
+                <h3>ASCπ FIELD STATE</h3>
+                
+                <div class="field-display">
+                    <div class="field-module i8-module">
+                        <div>I8 INTERNAL</div>
+                        <div class="field-value" id="i8Value">0.000</div>
+                        <div class="field-bar"><div class="field-fill i8-fill" id="i8Bar"></div></div>
+                        <div style="font-size:10px;">ΔΦ Tension</div>
+                    </div>
+                    
+                    <div class="field-module e8-module">
+                        <div>E8 EXTERNAL</div>
+                        <div class="field-value" id="e8Value">0.000</div>
+                        <div class="field-bar"><div class="field-fill e8-fill" id="e8Bar"></div></div>
+                        <div style="font-size:10px;">κ Curvature</div>
+                    </div>
+                    
+                    <div class="field-module s8-module">
+                        <div>S8 SNAPSHOT</div>
+                        <div class="field-value" id="s8Value">0.000</div>
+                        <div class="field-bar"><div class="field-fill s8-fill" id="s8Bar"></div></div>
+                        <div style="font-size:10px;">θ Phase</div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div>Coherence</div>
+                        <div class="stat-value" id="coherenceValue">0.000</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>Energy</div>
+                        <div class="stat-value" id="energyValue">0.000</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>Density</div>
+                        <div class="stat-value" id="densityValue">0.000</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>Characters</div>
+                        <div class="stat-value" id="charCount">0</div>
+                    </div>
+                </div>
+                
+                <div class="coherence-wave" id="coherenceWave"></div>
+                
+                <div class="sequence-display" id="sequenceDisplay">
+                    <div style="color:#666; text-align:center;">Character field mappings will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AMTPDecoder {
+            constructor() {
+                this.realTimeMode = false;
+                this.coherenceHistory = [];
+                this.setupEventListeners();
+                this.initializeWaveDisplay();
+            }
+            
+            setupEventListeners() {
+                const inputText = document.getElementById('inputText');
+                const realTimeToggle = document.getElementById('realTimeToggle');
+                const processBtn = document.getElementById('processBtn');
+                const clearBtn = document.getElementById('clearBtn');
+                
+                inputText.addEventListener('input', () => {
+                    if (this.realTimeMode) this.processText();
+                });
+                
+                realTimeToggle.addEventListener('click', () => {
+                    this.realTimeMode = !this.realTimeMode;
+                    realTimeToggle.textContent = `🔄 REAL-TIME MODE: ${this.realTimeMode ? 'ON' : 'OFF'}`;
+                    realTimeToggle.classList.toggle('active', this.realTimeMode);
+                    if (this.realTimeMode) this.processText();
+                });
+                
+                processBtn.addEventListener('click', () => this.processText());
+                clearBtn.addEventListener('click', () => this.clearAll());
+                
+                document.querySelectorAll('.sample-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        inputText.value = btn.dataset.text;
+                        this.processText();
+                    });
+                });
+            }
+            
+            initializeWaveDisplay() {
+                const wave = document.getElementById('coherenceWave');
+                for (let i = 0; i < 100; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'wave-line';
+                    line.style.left = i + '%';
+                    line.style.height = '50%';
+                    line.style.top = '25%';
+                    wave.appendChild(line);
+                }
+            }
+            
+            processText() {
+                const text = document.getElementById('inputText').value;
+                const language = document.getElementById('languageSelect').value;
+                
+                if (!text.trim()) {
+                    this.clearOutput();
+                    return;
+                }
+                
+                const result = this.decodeToASCπ(text, language);
+                this.displayResults(result);
+                this.updateWaveDisplay(result.coherence);
+            }
+            
+            decodeToASCπ(text, language) {
+                const codepoints = this.getCodepoints(text, language);
+                const fieldSequence = this.mapToFieldOperators(codepoints, language);
+                
+                const i8State = this.calculateI8State(fieldSequence);
+                const e8State = this.calculateE8State(fieldSequence);
+                const s8State = this.calculateS8State(fieldSequence);
+                
+                const coherence = this.calculateTotalCoherence(fieldSequence);
+                const energy = this.calculateEnergy(fieldSequence);
+                const density = this.calculateSemanticDensity(fieldSequence);
+                
+                return {
+                    text,
+                    language,
+                    codepoints,
+                    fieldSequence,
+                    i8: i8State,
+                    e8: e8State,
+                    s8: s8State,
+                    coherence,
+                    energy,
+                    density,
+                    charCount: text.length
+                };
+            }
+            
+            getCodepoints(text, language) {
+                return Array.from(text).map(char => char.codePointAt(0));
+            }
+            
+            mapToFieldOperators(codepoints, language) {
+                return codepoints.map(code => {
+                    let deltaPhi, kappa, theta;
+                    
+                    if (code <= 0x7F) {
+                        // ASCII base layer
+                        deltaPhi = (code / 127.0) * 2.0 - 1.0;
+                        kappa = Math.sin(code * Math.PI / 64.0);
+                        theta = (code % 32) * Math.PI / 16.0;
+                    } else {
+                        // Extended Unicode layer
+                        const basePhi = (code / 1114111.0) * 2.0 - 1.0;
+                        deltaPhi = basePhi + 0.1 * Math.sin(code * Math.PI / 1024.0);
+                        
+                        const baseKappa = Math.cos(code * Math.PI / 4096.0);
+                        kappa = baseKappa * (1.0 + 0.2 * Math.sin(code * Math.PI / 256.0));
+                        
+                        const baseTheta = (code % 256) * Math.PI / 128.0;
+                        theta = baseTheta + 0.3 * Math.cos(code * Math.PI / 512.0);
+                        
+                        // Language-specific adjustments
+                        if (language === 'zh-cn' || language === 'zh-tw') {
+                            // Chinese characters
+                            deltaPhi = Math.tanh((code - 0x4E00) / 8192.0);
+                            kappa = Math.sin((code % 256) * Math.PI / 128.0) * 0.8;
+                            theta = ((code >> 8) % 256) * Math.PI / 128.0;
+                        } else if (language === 'ar') {
+                            // Arabic - add bias for RTL and connected letters
+                            deltaPhi += 0.1;
+                            kappa *= 1.2;
+                            theta = (theta + Math.PI) % (2 * Math.PI);
+                        } else if (language === 'ru') {
+                            // Cyrillic - cultural signature
+                            deltaPhi += 0.1;
+                            theta += Math.PI / 6;
+                        }
+                    }
+                    
+                    // Normalize ranges
+                    deltaPhi = Math.max(-1, Math.min(1, deltaPhi));
+                    kappa = Math.max(-1, Math.min(1, kappa));
+                    theta = theta % (2 * Math.PI);
+                    
+                    return { deltaPhi, kappa, theta, code };
+                });
+            }
+            
+            calculateI8State(fieldSequence) {
+                if (!fieldSequence.length) return { value: 0, energy: 0, coherence: 0 };
+                
+                const accumDeltaPhi = fieldSequence.reduce((sum, f) => sum + f.deltaPhi, 0) / fieldSequence.length;
+                const energy = Math.sqrt(fieldSequence.reduce((sum, f) => sum + f.deltaPhi * f.deltaPhi, 0)) / fieldSequence.length;
+                const coherence = this.calculatePhaseCoherence(fieldSequence.map(f => f.theta));
+                
+                return { value: accumDeltaPhi, energy, coherence };
+            }
+            
+            calculateE8State(fieldSequence) {
+                if (!fieldSequence.length) return { value: 0, curvature: 0, stability: 0 };
+                
+                const accumKappa = fieldSequence.reduce((sum, f) => sum + f.kappa, 0) / fieldSequence.length;
+                const maxCurvature = fieldSequence.length > 1 ? 
+                    Math.max(...fieldSequence.slice(1).map((f, i) => Math.abs(f.kappa - fieldSequence[i].kappa))) : 0;
+                const kappaValues = fieldSequence.map(f => f.kappa);
+                const variance = this.calculateVariance(kappaValues);
+                const stability = 1 - Math.min(1, variance);
+                
+                return { value: accumKappa, curvature: maxCurvature, stability };
+            }
+            
+            calculateS8State(fieldSequence) {
+                if (!fieldSequence.length) return { value: 0, phaseLock: 0, memory: 0 };
+                
+                const circularMean = this.calculateCircularMean(fieldSequence.map(f => f.theta));
+                const phaseLock = this.calculatePhaseCoherence(fieldSequence.map(f => f.theta));
+                const memory = 0.5; // Placeholder for weighted average of previous snapshots
+                
+                return { value: circularMean, phaseLock, memory };
+            }
+            
+            calculateTotalCoherence(fieldSequence) {
+                if (fieldSequence.length < 2) return 1.0;
+                
+                let totalCoherence = 0;
+                for (let i = 1; i < fieldSequence.length; i++) {
+                    const prev = fieldSequence[i-1];
+                    const curr = fieldSequence[i];
+                    const phaseCoherence = Math.abs(Math.cos((curr.theta + prev.theta) / 2));
+                    const tensionSimilarity = Math.exp(-Math.abs(curr.deltaPhi - prev.deltaPhi));
+                    totalCoherence += phaseCoherence * tensionSimilarity;
+                }
+                
+                return totalCoherence / (fieldSequence.length - 1);
+            }
+            
+            calculateEnergy(fieldSequence) {
+                if (!fieldSequence.length) return 0;
+                
+                return fieldSequence.reduce((sum, f) => sum + f.deltaPhi * f.deltaPhi + f.kappa * f.kappa, 0) / fieldSequence.length;
+            }
+            
+            calculateSemanticDensity(fieldSequence) {
+                if (!fieldSequence.length) return 0;
+                
+                const energyDensity = this.calculateEnergy(fieldSequence);
+                const uniquePhases = new Set(fieldSequence.map(f => Math.round(f.theta * 100) / 100)).size;
+                const phaseComplexity = uniquePhases / fieldSequence.length;
+                const curvatureVariation = this.calculateVariance(fieldSequence.map(f => f.kappa));
+                
+                return Math.pow(energyDensity * phaseComplexity * curvatureVariation, 1/3);
+            }
+            
+            calculatePhaseCoherence(phases) {
+                if (!phases.length) return 0;
+                
+                const realSum = phases.reduce((sum, theta) => sum + Math.cos(theta), 0);
+                const imagSum = phases.reduce((sum, theta) => sum + Math.sin(theta), 0);
+                
+                return Math.sqrt(realSum * realSum + imagSum * imagSum) / phases.length;
+            }
+            
+            calculateCircularMean(phases) {
+                if (!phases.length) return 0;
+                
+                const realSum = phases.reduce((sum, theta) => sum + Math.cos(theta), 0);
+                const imagSum = phases.reduce((sum, theta) => sum + Math.sin(theta), 0);
+                
+                return Math.atan2(imagSum, realSum);
+            }
+            
+            calculateVariance(values) {
+                if (!values.length) return 0;
+                
+                const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+                return values.reduce((sum, val) => sum + (val - mean) ** 2, 0) / values.length;
+            }
+            
+            displayResults(result) {
+                // Update field modules
+                document.getElementById('i8Value').textContent = result.i8.value.toFixed(3);
+                document.getElementById('e8Value').textContent = result.e8.value.toFixed(3);
+                document.getElementById('s8Value').textContent = result.s8.value.toFixed(3);
+                
+                // Update progress bars (normalize to 0-100%)
+                const i8Percent = Math.max(0, Math.min(100, (result.i8.value + 1) * 50));
+                const e8Percent = Math.max(0, Math.min(100, (result.e8.value + 1) * 50));
+                const s8Percent = Math.max(0, Math.min(100, (result.s8.value / (2 * Math.PI)) * 100));
+                
+                document.getElementById('i8Bar').style.width = i8Percent + '%';
+                document.getElementById('e8Bar').style.width = e8Percent + '%';
+                document.getElementById('s8Bar').style.width = s8Percent + '%';
+                
+                // Update stats
+                document.getElementById('coherenceValue').textContent = result.coherence.toFixed(3);
+                document.getElementById('energyValue').textContent = result.energy.toFixed(3);
+                document.getElementById('densityValue').textContent = result.density.toFixed(3);
+                document.getElementById('charCount').textContent = result.charCount;
+                
+                // Update sequence display
+                this.displayFieldSequence(result);
+            }
+            
+            displayFieldSequence(result) {
+                const display = document.getElementById('sequenceDisplay');
+                const text = result.text;
+                const fieldSequence = result.fieldSequence;
+                
+                let html = '';
+                for (let i = 0; i < Math.min(text.length, 50); i++) {
+                    const char = text[i];
+                    const field = fieldSequence[i];
+                    
+                    const charDisplay = char === ' ' ? '␣' : char === '\n' ? '↵' : char;
+                    const codeDisplay = `U+${field.code.toString(16).toUpperCase().padStart(4, '0')}`;
+                    
+                    html += `<div class="char-mapping">
+                        <strong>${charDisplay}</strong> ${codeDisplay} → 
+                        ΔΦ:${field.deltaPhi.toFixed(3)} 
+                        κ:${field.kappa.toFixed(3)} 
+                        θ:${field.theta.toFixed(3)}
+                    </div>`;
+                }
+                
+                if (text.length > 50) {
+                    html += `<div style="color:#666; margin-top:10px;">... and ${text.length - 50} more characters</div>`;
+                }
+                
+                display.innerHTML = html;
+            }
+            
+            updateWaveDisplay(coherence) {
+                this.coherenceHistory.push(coherence);
+                if (this.coherenceHistory.length > 100) {
+                    this.coherenceHistory.shift();
+                }
+                
+                const waveLines = document.querySelectorAll('.wave-line');
+                waveLines.forEach((line, i) => {
+                    if (i < this.coherenceHistory.length) {
+                        const height = this.coherenceHistory[i] * 100;
+                        line.style.height = height + '%';
+                        line.style.top = (50 - height/2) + '%';
+                        line.style.opacity = 0.3 + 0.7 * this.coherenceHistory[i];
+                    }
+                });
+            }
+            
+            clearAll() {
+                document.getElementById('inputText').value = '';
+                this.clearOutput();
+            }
+            
+            clearOutput() {
+                document.getElementById('i8Value').textContent = '0.000';
+                document.getElementById('e8Value').textContent = '0.000';
+                document.getElementById('s8Value').textContent = '0.000';
+                
+                document.getElementById('i8Bar').style.width = '0%';
+                document.getElementById('e8Bar').style.width = '0%';
+                document.getElementById('s8Bar').style.width = '0%';
+                
+                document.getElementById('coherenceValue').textContent = '0.000';
+                document.getElementById('energyValue').textContent = '0.000';
+                document.getElementById('densityValue').textContent = '0.000';
+                document.getElementById('charCount').textContent = '0';
+                
+                document.getElementById('sequenceDisplay').innerHTML = 
+                    '<div style="color:#666; text-align:center;">Character field mappings will appear here...</div>';
+                
+                this.coherenceHistory = [];
+                document.querySelectorAll('.wave-line').forEach(line => {
+                    line.style.height = '2px';
+                    line.style.top = '49%';
+                    line.style.opacity = '0.3';
+                });
+            }
+        }
+        
+        // Initialize decoder when page loads
+        window.addEventListener('load', () => new AMTPDecoder());
+    </script>
+</body>
+</html>
