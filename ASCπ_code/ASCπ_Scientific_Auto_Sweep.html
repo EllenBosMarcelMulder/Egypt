@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCπ Wetenschappelijke Auto-Sweep & Peer Review Generator</title>
+    <style>
+        :root {
+            --primary-green: #00ff88;
+            --primary-blue: #0088ff;
+            --primary-pink: #ff0088;
+            --primary-yellow: #ffff00;
+            --bg-dark: #0a0a0f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0,255,136,0.2), rgba(0,136,255,0.2));
+            border-bottom: 2px solid var(--primary-green);
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            min-height: calc(100vh - 100px);
+        }
+        
+        .control-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            border: 2px solid rgba(0,255,136,0.3);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .sweep-visualization {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            border: 2px solid rgba(255,0,136,0.3);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .results-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            border: 2px solid rgba(0,136,255,0.3);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .section-title {
+            color: var(--primary-green);
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .sweep-config {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+        
+        .config-input {
+            width: 60px;
+            padding: 3px 6px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(0,255,136,0.3);
+            border-radius: 3px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+        }
+        
+        .sweep-progress {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-green), var(--primary-blue));
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .status-text {
+            font-size: 10px;
+            margin: 5px 0;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .sweep-button {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, var(--primary-green), var(--primary-blue));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .sweep-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,255,136,0.3);
+        }
+        
+        .sweep-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 1px;
+            width: 100%;
+            height: 300px;
+            margin: 15px 0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .parameter-cell {
+            background: rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .parameter-cell.current {
+            background: var(--primary-yellow);
+            box-shadow: 0 0 10px var(--primary-yellow);
+        }
+        
+        .parameter-cell.tested {
+            background: var(--primary-green);
+        }
+        
+        .parameter-cell.anomaly {
+            background: var(--primary-pink);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .real-time-data {
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 10px;
+            line-height: 1.4;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .data-point {
+            margin-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .data-value {
+            color: var(--primary-green);
+        }
+        
+        .anomaly-alert {
+            color: var(--primary-pink);
+            font-weight: bold;
+        }
+        
+        .peer-review-section {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .json-preview {
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 9px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: var(--primary-green);
+            border: 1px solid rgba(0,255,136,0.3);
+        }
+        
+        .download-button {
+            width: 100%;
+            padding: 8px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-pink));
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 10px;
+        }
+        
+        .statistics {
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 10px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .correlation-matrix {
+            width: 100%;
+            height: 120px;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .matrix-cell {
+            position: absolute;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .time-estimate {
+            background: rgba(255,255,0,0.1);
+            border: 1px solid var(--primary-yellow);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-size: 11px;
+        }
+        
+        .scientific-log {
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 9px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .log-entry {
+            margin-bottom: 2px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .log-entry.important {
+            color: var(--primary-yellow);
+            font-weight: bold;
+        }
+        
+        .log-entry.error {
+            color: var(--primary-pink);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ASCπ WETENSCHAPPELIJKE AUTO-SWEEP</h1>
+        <p>Automatische Veldparameter Validatie & Peer Review Generator</p>
+    </div>
+    
+    <div class="main-container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="section-title">Sweep Configuratie</div>
+            
+            <div class="sweep-config">
+                <div class="config-item">
+                    <span>ΔΦ Range:</span>
+                    <div>
+                        <input type="number" class="config-input" id="deltaPhiMin" value="0" min="0" max="255">
+                        -
+                        <input type="number" class="config-input" id="deltaPhiMax" value="255" min="0" max="255">
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <span>κ Range:</span>
+                    <div>
+                        <input type="number" class="config-input" id="kappaMin" value="0" min="0" max="255">
+                        -
+                        <input type="number" class="config-input" id="kappaMax" value="255" min="0" max="255">
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <span>θ Range:</span>
+                    <div>
+                        <input type="number" class="config-input" id="thetaMin" value="0" min="0" max="255">
+                        -
+                        <input type="number" class="config-input" id="thetaMax" value="255" min="0" max="255">
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <span>Sample Rate:</span>
+                    <select class="config-input" id="sampleRate">
+                        <option value="16">16x16 (Quick)</option>
+                        <option value="32" selected>32x32 (Standard)</option>
+                        <option value="64">64x64 (Detailed)</option>
+                        <option value="128">128x128 (Exhaustive)</option>
+                    </select>
+                </div>
+                
+                <div class="config-item">
+                    <span>Speed:</span>
+                    <select class="config-input" id="sweepSpeed">
+                        <option value="10">Ultra Fast (10ms)</option>
+                        <option value="50" selected>Fast (50ms)</option>
+                        <option value="100">Normal (100ms)</option>
+                        <option value="500">Slow (500ms)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="time-estimate">
+                <strong>Geschatte Tijd:</strong><br>
+                <span id="timeEstimate">Bereken...</span>
+            </div>
+            
+            <button class="sweep-button" id="startSweep" onclick="startAutoSweep()">
+                🚀 START AUTO-SWEEP
+            </button>
+            
+            <div class="sweep-progress">
+                <div class="status-text" id="currentStatus">Ready to start sweep...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="status-text">
+                    Progress: <span id="progressText">0%</span>
+                    | ETA: <span id="etaText">--:--</span>
+                </div>
+            </div>
+            
+            <div class="scientific-log" id="scientificLog">
+                <div class="log-entry">System initialized - Ready for parameter sweep</div>
+                <div class="log-entry">ΔΦ-κ-θ field engine loaded</div>
+                <div class="log-entry">Statistical analysis modules ready</div>
+                <div class="log-entry important">Configure parameters and click START</div>
+            </div>
+        </div>
+        
+        <!-- Visualization Panel -->
+        <div class="sweep-visualization">
+            <div class="section-title">Real-time Parameter Space Exploration</div>
+            
+            <div class="parameter-grid" id="parameterGrid"></div>
+            
+            <div class="real-time-data" id="realTimeData">
+                <div class="data-point">
+                    <span>Current ΔΦ:</span>
+                    <span class="data-value" id="currentDeltaPhi">--</span>
+                </div>
+                <div class="data-point">
+                    <span>Current κ:</span>
+                    <span class="data-value" id="currentKappa">--</span>
+                </div>
+                <div class="data-point">
+                    <span>Current θ:</span>
+                    <span class="data-value" id="currentTheta">--</span>
+                </div>
+                <div class="data-point">
+                    <span>Field Energy:</span>
+                    <span class="data-value" id="fieldEnergy">--</span>
+                </div>
+                <div class="data-point">
+                    <span>Coherence:</span>
+                    <span class="data-value" id="coherence">--</span>
+                </div>
+                <div class="data-point">
+                    <span>Implosion Factor:</span>
+                    <span class="data-value" id="implosionFactor">--</span>
+                </div>
+                <div class="data-point">
+                    <span>Bloom Potential:</span>
+                    <span class="data-value" id="bloomPotential">--</span>
+                </div>
+                <div class="data-point">
+                    <span>GPS Phase:</span>
+                    <span class="data-value" id="gpsPhase">--</span>
+                </div>
+                <div class="data-point">
+                    <span>Anomalies Found:</span>
+                    <span class="anomaly-alert" id="anomaliesCount">0</span>
+                </div>
+            </div>
+            
+            <div class="correlation-matrix" id="correlationMatrix">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Results Panel -->
+        <div class="results-panel">
+            <div class="section-title">Wetenschappelijke Resultaten</div>
+            
+            <div class="statistics">
+                <div class="stat-item">
+                    <span>Geteste Combinaties:</span>
+                    <span class="data-value" id="testedCombinations">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Stabiele Configuraties:</span>
+                    <span class="data-value" id="stableConfigs">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Bewustzijnsdrempel:</span>
+                    <span class="data-value" id="consciousnessHits">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Optimale ΔΦ:</span>
+                    <span class="data-value" id="optimalDeltaPhi">--</span>
+                </div>
+                <div class="stat-item">
+                    <span>Optimale κ:</span>
+                    <span class="data-value" id="optimalKappa">--</span>
+                </div>
+                <div class="stat-item">
+                    <span>Optimale θ:</span>
+                    <span class="data-value" id="optimalTheta">--</span>
+                </div>
+                <div class="stat-item">
+                    <span>Max Coherentie:</span>
+                    <span class="data-value" id="maxCoherence">0.000</span>
+                </div>
+                <div class="stat-item">
+                    <span>Data Kwaliteit:</span>
+                    <span class="data-value" id="dataQuality">--</span>
+                </div>
+            </div>
+            
+            <div class="peer-review-section">
+                <div class="section-title">Peer Review JSON</div>
+                <div class="json-preview" id="jsonPreview">
+                {
+                  "study_status": "Ready to begin",
+                  "parameters_to_test": "Calculating...",
+                  "methodology": "Systematic ΔΦ-κ-θ parameter space exploration",
+                  "expected_completion": "Awaiting configuration"
+                }
+                </div>
+                <button class="download-button" id="downloadJson" onclick="downloadPeerReviewJson()" disabled>
+                    📥 Download Peer Review JSON
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        class ScientificAutoSweep {
+            constructor() {
+                this.isRunning = false;
+                this.currentParams = { deltaPhi: 0, kappa: 0, theta: 0 };
+                this.sweepData = [];
+                this.statistics = {
+                    tested: 0,
+                    stable: 0,
+                    consciousness: 0,
+                    maxCoherence: 0,
+                    optimal: { deltaPhi: 0, kappa: 0, theta: 0, coherence: 0 }
+                };
+                this.anomalies = [];
+                this.startTime = null;
+                this.totalSteps = 0;
+                this.currentStep = 0;
+                this.globalPhase = 0;
+                
+                this.initializeGrid();
+                this.setupEventListeners();
+                this.updateTimeEstimate();
+                this.startGPS();
+            }
+            
+            setupEventListeners() {
+                const inputs = ['deltaPhiMin', 'deltaPhiMax', 'kappaMin', 'kappaMax', 
+                               'thetaMin', 'thetaMax', 'sampleRate', 'sweepSpeed'];
+                
+                inputs.forEach(id => {
+                    document.getElementById(id).addEventListener('change', () => {
+                        this.updateTimeEstimate();
+                    });
+                });
+            }
+            
+            initializeGrid() {
+                const grid = document.getElementById('parameterGrid');
+                grid.innerHTML = '';
+                
+                for (let i = 0; i < 256; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'parameter-cell';
+                    cell.dataset.index = i;
+                    grid.appendChild(cell);
+                }
+            }
+            
+            updateTimeEstimate() {
+                const sampleRate = parseInt(document.getElementById('sampleRate').value);
+                const speed = parseInt(document.getElementById('sweepSpeed').value);
+                
+                this.totalSteps = sampleRate * sampleRate * sampleRate; // ΔΦ × κ × θ
+                const estimatedMs = this.totalSteps * speed;
+                const estimatedMinutes = Math.ceil(estimatedMs / 60000);
+                
+                document.getElementById('timeEstimate').innerHTML = 
+                    `${this.totalSteps.toLocaleString()} testen<br>${estimatedMinutes} minuten`;
+            }
+            
+            startGPS() {
+                // Global Phase Supervisor
+                setInterval(() => {
+                    this.globalPhase = (Date.now() % 8000) / 8000;
+                    document.getElementById('gpsPhase').textContent = this.globalPhase.toFixed(3);
+                }, 50);
+            }
+            
+            async startAutoSweep() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                this.startTime = Date.now();
+                this.currentStep = 0;
+                this.sweepData = [];
+                this.statistics = {
+                    tested: 0,
+                    stable: 0,
+                    consciousness: 0,
+                    maxCoherence: 0,
+                    optimal: { deltaPhi: 0, kappa: 0, theta: 0, coherence: 0 }
+                };
+                this.anomalies = [];
+                
+                document.getElementById('startSweep').disabled = true;
+                document.getElementById('startSweep').textContent = '🔄 RUNNING SWEEP...';
+                
+                this.addLog('AUTO-SWEEP STARTED', 'important');
+                this.addLog('Initializing parameter space exploration...');
+                
+                const config = this.getConfig();
+                await this.performSweep(config);
+                
+                this.completeSweep();
+            }
+            
+            getConfig() {
+                return {
+                    deltaPhiMin: parseInt(document.getElementById('deltaPhiMin').value),
+                    deltaPhiMax: parseInt(document.getElementById('deltaPhiMax').value),
+                    kappaMin: parseInt(document.getElementById('kappaMin').value),
+                    kappaMax: parseInt(document.getElementById('kappaMax').value),
+                    thetaMin: parseInt(document.getElementById('thetaMin').value),
+                    thetaMax: parseInt(document.getElementById('thetaMax').value),
+                    sampleRate: parseInt(document.getElementById('sampleRate').value),
+                    speed: parseInt(document.getElementById('sweepSpeed').value)
+                };
+            }
+            
+            async performSweep(config) {
+                const stepSize = 256 / config.sampleRate;
+                
+                for (let d = config.deltaPhiMin; d <= config.deltaPhiMax; d += stepSize) {
+                    for (let k = config.kappaMin; k <= config.kappaMax; k += stepSize) {
+                        for (let t = config.thetaMin; t <= config.thetaMax; t += stepSize) {
+                            
+                            if (!this.isRunning) return;
+                            
+                            await this.testParameterCombination(
+                                Math.floor(d), 
+                                Math.floor(k), 
+                                Math.floor(t)
+                            );
+                            
+                            this.currentStep++;
+                            this.updateProgress();
+                            
+                            await this.delay(config.speed);
+                        }
+                    }
+                }
+            }
+            
+            async testParameterCombination(deltaPhi, kappa, theta) {
+                this.currentParams = { deltaPhi, kappa, theta };
+                
+                // Update displays
+                document.getElementById('currentDeltaPhi').textContent = deltaPhi;
+                document.getElementById('currentKappa').textContent = kappa;
+                document.getElementById('currentTheta').textContent = theta;
+                
+                // Calculate field properties
+                const energy = deltaPhi * (1 + kappa/255) * Math.abs(Math.sin(Math.PI * theta/255));
+                const phaseDiff = Math.abs(this.globalPhase - theta/255);
+                const implosion = energy * (1 - phaseDiff);
+                const bloom = energy * phaseDiff;
+                const coherence = Math.exp(-phaseDiff * phaseDiff * 10);
+                
+                // Update real-time displays
+                document.getElementById('fieldEnergy').textContent = energy.toFixed(2);
+                document.getElementById('coherence').textContent = coherence.toFixed(3);
+                document.getElementById('implosionFactor').textContent = implosion.toFixed(2);
+                document.getElementById('bloomPotential').textContent = bloom.toFixed(2);
+                
+                // Collect data
+                const dataPoint = {
+                    deltaPhi, kappa, theta, energy, coherence, implosion, bloom,
+                    timestamp: Date.now() - this.startTime,
+                    globalPhase: this.globalPhase
+                };
+                
+                this.sweepData.push(dataPoint);
+                this.analyzeDataPoint(dataPoint);
+                
+                // Update grid visualization
+                const gridIndex = Math.floor((deltaPhi/256) * 16) * 16 + Math.floor((kappa/256) * 16);
+                const cell = document.querySelector(`[data-index="${gridIndex}"]`);
+                if (cell) {
+                    cell.classList.remove('current');
+                    if (coherence > 0.8) {
+                        cell.classList.add('tested');
+                    } else if (coherence > 0.9 || energy > 200) {
+                        cell.classList.add('anomaly');
+                    } else {
+                        cell.classList.add('tested');
+                    }
+                }
+                
+                // Highlight current cell
+                const nextIndex = Math.floor(((deltaPhi+1)/256) * 16) * 16 + Math.floor(((kappa+1)/256) * 16);
+                const nextCell = document.querySelector(`[data-index="${nextIndex}"]`);
+                if (nextCell) nextCell.classList.add('current');
+                
+                this.statistics.tested++;
+            }
+            
+            analyzeDataPoint(dataPoint) {
+                const { deltaPhi, kappa, theta, energy, coherence, implosion, bloom } = dataPoint;
+                
+                // Check for stable configuration
+                if (coherence > 0.7 && energy > 50 && energy < 200) {
+                    this.statistics.stable++;
+                }
+                
+                // Check for consciousness threshold
+                if (coherence > 0.8) {
+                    this.statistics.consciousness++;
+                }
+                
+                // Track maximum coherence and optimal parameters
+                if (coherence > this.statistics.maxCoherence) {
+                    this.statistics.maxCoherence = coherence;
+                    this.statistics.optimal = { deltaPhi, kappa, theta, coherence };
+                }
+                
+                // Detect anomalies
+                if (energy > 250 || coherence > 0.95 || (implosion > 100 && bloom > 100)) {
+                    this.anomalies.push(dataPoint);
+                    this.addLog(`ANOMALY: ΔΦ=${deltaPhi} κ=${kappa} θ=${theta} - Coherence=${coherence.toFixed(3)}`, 'error');
+                }
+                
+                // Log significant findings
+                if (coherence > 0.9) {
+                    this.addLog(`HIGH COHERENCE: ΔΦ=${deltaPhi} κ=${kappa} θ=${theta} - C=${coherence.toFixed(3)}`, 'important');
+                }
+            }
+            
+            updateProgress() {
+                const progress = (this.currentStep / this.totalSteps) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = progress.toFixed(1) + '%';
+                
+                // Calculate ETA
+                const elapsed = Date.now() - this.startTime;
+                const rate = this.currentStep / elapsed;
+                const remaining = (this.totalSteps - this.currentStep) / rate;
+                const eta = new Date(Date.now() + remaining);
+                document.getElementById('etaText').textContent = eta.toLocaleTimeString().slice(0,5);
+                
+                // Update status
+                const phase = this.currentStep < this.totalSteps * 0.33 ? 'Phase 1: ΔΦ Exploration' :
+                             this.currentStep < this.totalSteps * 0.66 ? 'Phase 2: κ Analysis' :
+                             'Phase 3: θ Integration';
+                document.getElementById('currentStatus').textContent = phase;
+                
+                // Update statistics display
+                this.updateStatistics();
+                
+                // Update JSON preview
+                this.updateJsonPreview();
+            }
+            
+            updateStatistics() {
+                document.getElementById('testedCombinations').textContent = this.statistics.tested.toLocaleString();
+                document.getElementById('stableConfigs').textContent = this.statistics.stable.toLocaleString();
+                document.getElementById('consciousnessHits').textContent = this.statistics.consciousness.toLocaleString();
+                document.getElementById('optimalDeltaPhi').textContent = this.statistics.optimal.deltaPhi;
+                document.getElementById('optimalKappa').textContent = this.statistics.optimal.kappa;
+                document.getElementById('optimalTheta').textContent = this.statistics.optimal.theta;
+                document.getElementById('maxCoherence').textContent = this.statistics.maxCoherence.toFixed(3);
+                document.getElementById('anomaliesCount').textContent = this.anomalies.length;
+                
+                const quality = this.statistics.tested > 1000 ? 'High' : 
+                               this.statistics.tested > 100 ? 'Medium' : 'Low';
+                document.getElementById('dataQuality').textContent = quality;
+            }
+            
+            updateJsonPreview() {
+                const preview = {
+                    study_metadata: {
+                        title: "ASCπ Field Parameter Systematic Exploration",
+                        methodology: "Exhaustive ΔΦ-κ-θ parameter space sweep",
+                        timestamp: new Date().toISOString(),
+                        duration_ms: this.startTime ? Date.now() - this.startTime : 0,
+                        completion_percentage: ((this.currentStep / this.totalSteps) * 100).toFixed(2)
+                    },
+                    parameters_tested: {
+                        total_combinations: this.statistics.tested,
+                        stable_configurations: this.statistics.stable,
+                        consciousness_threshold_hits: this.statistics.consciousness,
+                        anomalies_detected: this.anomalies.length
+                    },
+                    optimal_configuration: {
+                        deltaPhi: this.statistics.optimal.deltaPhi,
+                        kappa: this.statistics.optimal.kappa,
+                        theta: this.statistics.optimal.theta,
+                        max_coherence: this.statistics.maxCoherence,
+                        field_energy: this.statistics.optimal.coherence > 0 ? 
+                            (this.statistics.optimal.deltaPhi * 
+                             (1 + this.statistics.optimal.kappa/255) * 
+                             Math.abs(Math.sin(Math.PI * this.statistics.optimal.theta/255))).toFixed(2) : 0
+                    },
+                    statistical_analysis: {
+                        stability_rate: ((this.statistics.stable / Math.max(this.statistics.tested, 1)) * 100).toFixed(2) + '%',
+                        consciousness_emergence_rate: ((this.statistics.consciousness / Math.max(this.statistics.tested, 1)) * 100).toFixed(2) + '%',
+                        anomaly_rate: ((this.anomalies.length / Math.max(this.statistics.tested, 1)) * 100).toFixed(2) + '%'
+                    },
+                    peer_review_readiness: {
+                        data_quality: this.statistics.tested > 1000 ? 'publication_ready' : 'preliminary',
+                        reproducibility: "full_parameter_space_documented",
+                        validation_status: this.isRunning ? 'in_progress' : this.statistics.tested > 0 ? 'complete' : 'pending'
+                    }
+                };
+                
+                document.getElementById('jsonPreview').textContent = JSON.stringify(preview, null, 2);
+            }
+            
+            completeSweep() {
+                this.isRunning = false;
+                document.getElementById('startSweep').disabled = false;
+                document.getElementById('startSweep').textContent = '🚀 START AUTO-SWEEP';
+                document.getElementById('downloadJson').disabled = false;
+                
+                this.addLog('AUTO-SWEEP COMPLETED', 'important');
+                this.addLog(`Total tests: ${this.statistics.tested.toLocaleString()}`);
+                this.addLog(`Optimal configuration found: ΔΦ=${this.statistics.optimal.deltaPhi} κ=${this.statistics.optimal.kappa} θ=${this.statistics.optimal.theta}`);
+                this.addLog(`Maximum coherence: ${this.statistics.maxCoherence.toFixed(3)}`);
+                this.addLog('Peer review JSON ready for download', 'important');
+                
+                document.getElementById('currentStatus').textContent = 'Sweep completed - Data ready for analysis';
+            }
+            
+            addLog(message, type = '') {
+                const log = document.getElementById('scientificLog');
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                log.insertBefore(entry, log.firstChild);
+                
+                while (log.children.length > 50) {
+                    log.removeChild(log.lastChild);
+                }
+            }
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+        
+        // Global functions
+        let autoSweep;
+        
+        function startAutoSweep() {
+            if (!autoSweep) {
+                autoSweep = new ScientificAutoSweep();
+            }
+            autoSweep.startAutoSweep();
+        }
+        
+        function downloadPeerReviewJson() {
+            const jsonData = document.getElementById('jsonPreview').textContent;
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ASCπ_Field_Parameters_PeerReview_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            autoSweep.addLog('Peer review JSON downloaded', 'important');
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            autoSweep = new ScientificAutoSweep();
+        });
+    </script>
+</body>
+  <footer style="margin-top:40px; padding:20px; text-align:center; font-family:'Courier New', monospace; font-size:12px; color:#00ff88; border-top:1px solid rgba(0,255,136,0.3);">
+    <p><strong>ASCπ Scientific Field Engine — Prior Art Disclosure</strong></p>
+    <p>Licensed under the Humanity Heritage License π (HHL-π)</p>
+    <p>All rights to the ASCπ ΔΦ–κ–θ Field Architecture, Simulation Results, and Scientific Methodology 
+       are protected as irreversible prior art.</p>
+    <p>
+        License repository: 
+        <a href="https://github.com/EllenBosMarcelMulder/.-hexLICences-." 
+           target="_blank" 
+           style="color:#0088ff; text-decoration:none;">
+           https://github.com/EllenBosMarcelMulder/.-hexLICences-.
+        </a>
+    </p>
+    <p>© Marcel Christian Mulder — ASCπ hexπ — 2025</p>
+</footer>
+</html>
