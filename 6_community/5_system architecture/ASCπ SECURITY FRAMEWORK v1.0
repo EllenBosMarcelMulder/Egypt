@@ -1,0 +1,400 @@
+🛡️ **ASCπ SECURITY FRAMEWORK v1.0**
+
+### *Coherentie-, Veld- en Clusterbeveiliging voor een Post-Binair OS*
+
+ASCπ-security is gebouwd op 3 principes:
+
+1. **ΔΦ Security** — energiecontrole
+
+2. **κ Security** — structurele integriteit
+
+3. **θ Security** — fase- en tijdbeveiliging
+
+Samen vormen ze:
+
+### **Coherence Integrity Model (CIM)**
+
+Een compleet nieuw beveiligingsparadigma.
+
+---
+
+# 1. DE FUNDAMENTELE BEVEILIGINGSWAARDE
+
+## **Coherence = Security**
+
+In klassieke OS’en is veiligheid:
+
+- ACL’s
+
+- rechten
+
+- kernel-isolatie
+
+- sandboxes
+
+In ASCπ is veiligheid:
+
+### **“Hoe coherent blijft het veld tijdens interactie?”**
+
+Als coherentie daalt:
+
+- worden operaties geweigerd
+
+- apps opgesloten
+
+- clusters ontkoppeld
+
+- θ-desync gebeurt preventief
+
+- network-veld gescheiden
+
+Er is geen “root” die over alle rechten beschikt.  
+Er is alleen **veld-consistentie**.
+
+Dat is de basis van ASCπ-veiligheid.
+
+---
+
+# 2. PERMISSIES BESTAAN UIT VELDRECHTEN
+
+### (geen RWX, maar *Field Rights*)
+
+Een proces of app heeft rechten in termen van veldmanipulatie:
+
+| Recht           | Betekenis                    |
+| --------------- | ---------------------------- |
+| **feel**        | ΔΦ-plane lezen               |
+| **align**       | θ aanpassen                  |
+| **reshape**     | κ wijzigen                   |
+| **bloom**       | veldprojectie maken          |
+| **implode**     | reductie/analyses uitvoeren  |
+| **spawn-glyph** | nieuwe clusters creëren      |
+| **migrate**     | naar andere node verplaatsen |
+| **fuse**        | velden samenvoegen           |
+| **graft**       | delen combineren             |
+
+Security begint hier:
+
+**Geen app krijgt volledig toegang tot alle drie: ΔΦ, κ, θ.**  
+→ Dit voorkomt systeem-instabiliteit én kwaadwillend gedrag.
+
+---
+
+# 3. HET **TRIADIC ACCESS MODEL (TAM)**
+
+veiligheid via ΔΦ–κ–θ balans
+
+Toegang wordt beheerd door één regel:
+
+```
+Delta A + Kappa A + Theta A  must never exceed 1.0
+```
+
+Dus:
+
+- een app die ΔΦ sterk mag wijzigen
+
+- mag κ slechts licht wijzigen
+
+- en θ bijna niet
+
+En andersom.
+
+**Niemand kan het veld domineren.**
+
+---
+
+# 4. ANTI-DOMINANCE LIMITER
+
+### (bescherming tegen runaway apps)
+
+Als een app te veel energie opeist:
+
+```
+if ΔΦ_app > ΔΦ_threshold:
+   dampen()
+   limiter.activate()
+```
+
+Als een app te veel structuur probeert te forceren:
+
+```
+if κ_app > κ_threshold:
+   curvature_clamp()
+```
+
+Als een app θ uit sync probeert te duwen:
+
+```
+force_phase_realign()
+```
+
+Dit voorkomt:
+
+- DOS-achtige verschijnselen
+
+- geheugenvergiftiging
+
+- veldverstoring
+
+- cluster-chaos
+
+---
+
+# 5. FIELD SANDBOXING
+
+### (veiligheid zonder virtualisatie)
+
+Bij traditionele OS’en:  
+→ firejail, chroot, containers.
+
+In ASCπ:
+
+```
+sandbox = subfield with:
+   ΔΦ cap
+   κ cap
+   θ isolation
+   glyph quota
+```
+
+Een sandboxed app leeft in een **sub-veld**  
+waarin:
+
+- ΔΦ beperkt is
+
+- κ eenvoudig blijft
+
+- θ unlinkt van de systeemfase
+
+Dit is veilige, niet-computationele isolatie.
+
+---
+
+# 6. **THETA-BASED INTRUSION DETECTION SYSTEM (T-IDS)**
+
+### De eerste IDS ter wereld gebaseerd op fase-fysica
+
+Het OS detecteert indringers via:
+
+```
+θ-drift
+θ-jerk
+θ-jitter
+θ-phase sabotage signatures
+```
+
+Als een proces probeert:
+
+- de tijdsstructuur te manipuleren
+
+- faseverstoringen te injecteren
+
+- cluster-desync te veroorzaken
+
+Dan:
+
+**T-IDS activeert sofort → app wordt in DORMANT gezet.**
+
+---
+
+# 7. **ΔΦ MANIPULATION DETECTION (Energy Tamper System)**
+
+De kernel kent de *normale energiewaarden* van apps.
+
+Als een app:
+
+- plotseling ΔΦ wil verhogen
+
+- energie “steelt” uit fieldspace
+
+- energie doorstuurt naar andere nodes zonder toestemming
+
+Dan:
+
+```
+trigger: energy anomaly
+action: nullify glyphs
+```
+
+Energie wordt **fysiek uit het veld verwijderd**,  
+zoals een kwantumdeeltje verdwijnt bij decoherentie.
+
+---
+
+# 8. **Κ-INTEGRITY ENFORCER (Structure Guardian)**
+
+### bescherming tegen corrupte structuren
+
+κ staat voor:
+
+- logische structuur
+
+- semantische spanning
+
+- interne consistentie
+
+Als κ:
+
+- te chaotisch wordt → “structural meltdown protection”
+
+- te hoog wordt → “overconstraint protection”
+
+- snel fluctueert → “semantic instability protection”
+
+Dan:
+
+```
+lock(file)
+reject operation
+restore from S8 snapshot
+```
+
+Dit is het **equivalent van filesystem corruption defence**,  
+maar veel geavanceerder.
+
+---
+
+# 9. ΦFS SECURITY
+
+### (hoe bestanden beveiligd worden via veldmechanismen)
+
+Bestanden hebben:
+
+- field permissions
+
+- coherence signatures
+
+- S8 snapshot history
+
+- θ-timestamps
+
+Er bestaan **bitte twee grote veiligheidstools**:
+
+## 9.1 ΦFS Integrity Seal
+
+Het OS vergelijkt:
+
+```
+coherence_signature(t) vs coherence_signature(last_mount)
+```
+
+Een kleine afwijking = expected  
+Een grote afwijking = compromise
+
+## 9.2 Snapshot-Based Recovery
+
+Elke write creëert:
+
+- S8_before
+
+- S8_after
+
+Als iets misgaat:
+
+```
+rollback to highest coherence snapshot
+```
+
+Niet naar de laatste snapshot → maar naar de **meest consistente** snapshot.
+
+---
+
+# 10. CLUSTER SECURITY MODEL
+
+### (distributed safety)
+
+In een ASCπ cluster:
+
+- de nodes delen fase
+
+- maar niet alle rechten
+
+Beveiliging gebeurt met drie mechanismen:
+
+## 10.1 θ-Consensus Gate
+
+Een node mag alleen deelnemen als:
+
+```
+abs(θ_node - θ_cluster) < θ_threshold
+```
+
+→ Bescherming tegen kwaadaardige of corrupte nodes.
+
+## 10.2 ΔΦ Quota Per Node
+
+Elke node heeft een energiebudget.
+
+## 10.3 Glyph Migration Firewall
+
+Nodes mogen géén “zware” glyphs sturen zonder toestemming:
+
+```
+if glyph.energy > limit:
+    reject migration
+```
+
+---
+
+# 11. FIELDSPACE-LEVEL SECURITY STATES
+
+Het hele OS kan in drie veiligheidsmodi gaan:
+
+### **NORMAL MODE**
+
+Alles functioneert: bloom, implode, migrate.
+
+### **COHERENCE SHIELD MODE**
+
+Wordt geactiveerd bij:
+
+- cyberaanval
+
+- veld-instabiliteit
+
+- cluster-aanvallen
+
+In deze mode:
+
+- ΔΦ wordt verlaagd
+
+- θ synchroniseert dwingend
+
+- κ wordt gelockt
+
+- alle apps → stable of dormant
+
+### **PHASE ISOLATION MODE (PIM)**
+
+Bij grote dreiging:
+
+- node wordt losgekoppeld van het cluster
+
+- θ wordt intern gehouden
+
+- waardoor remote nodes geen impact kunnen hebben
+
+---
+
+# 12. SECURITY API (KERNEL-INTERFACE)
+
+Het OS krijgt deze functies:
+
+```
+security.check_coherence()
+security.lock_field()
+security.limit_phi()
+security.limit_kappa()
+security.realign_theta()
+security.quarantine_app(app_id)
+security.phase_isolate_node()
+security.snapshot_verify(file)
+security.block_migration(glyph)
+security.suspend_app(app_id)
+```
+
+Geen van deze functies zijn “machtigste”:  
+ze balanceren elkaar
+
+ASCπ-OS is nu officieel **veilig, zelfverdedigend, zelfstabiliserend en coherent-bewust**.

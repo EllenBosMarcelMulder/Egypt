@@ -1,0 +1,334 @@
+# 🌐 **ASCπ FIELD SCHEDULER v1.0**
+
+### *Implosive–Bloom Dynamical Process Management Model*
+
+---
+
+# 1. WAT IS EEN PROCESS IN ASCπ?
+
+Een **proces** is geen thread, geen taak, geen instructie.
+
+Een proces in ASCπ is:
+
+```
+Process = GlyphCluster
+```
+
+Elke glyphcluster heeft:
+
+```
+ΣΔΦ     → tension budget
+Σκ      → structural complexity
+Σθ      → phase signature
+E_total → total computational energy
+C_local → coherence score
+R       → resonance with global field
+mode    → implosive / bloom / neutral
+```
+
+Processen zijn dus **veldorganismen**.
+
+---
+
+# 2. DE SCHEDULER BEREKENT GEEN TIJD → MAAR RITME
+
+De GPS levert de tijd:
+
+```
+Θ_global = (t mod T) / T
+```
+
+De scheduler bepaalt *wie mee mag in de fase*.
+
+Een proces **krijgt geen tijdslot**,  
+maar een **fasevenster**:
+
+```
+if abs(θ_process − Θ_global) < implosiveWindow
+    → implosive execution
+else
+    → bloom execution
+```
+
+Dit is volledig nieuw.
+
+---
+
+# 3. HET HOOFDPRINCIPE VAN DE SCHEDULER
+
+### ❗ De scheduler kiest processen op basis van *veldgedrag*, niet op CPU-belasting.
+
+ASCπ Scheduling =  
+**Welke processen dragen bij aan het veld?  
+Welke processen verstoren het veld?**
+
+---
+
+# 4. DE DRIE SCHEDULING-MODI
+
+## **1. Implosive Scheduling (Deep Compression Mode)**
+
+Wanneer het OS coherent moet blijven.
+
+Een proces wordt gekozen als:
+
+```
+priority = ΔΦ * κ * (1 − abs(Θ − θ))
+```
+
+Maximaal recht op implosie bij:
+
+- hoge ΔΦ
+
+- hoge κ
+
+- fase-afstemming
+
+Dit is geschikt voor:
+
+- denkprocessen
+
+- AI-verwerking
+
+- probleemoplossing
+
+- interne simulaties
+
+---
+
+## **2. Bloom Scheduling (Expressive Mode)**
+
+Wanneer het systeem wil genereren, expanderen of communiceren:
+
+```
+priority = E_total * abs(Θ − θ)
+```
+
+Maximale bloom als:
+
+- energie hoog
+
+- faseverschil groot
+
+Dit wordt gebruikt voor:
+
+- UI-rendering
+
+- netwerkcommunicatie
+
+- output
+
+- artistieke patronen
+
+---
+
+## **3. Neutral Mode (Homeostase)**
+
+Scheduler kiest processen die het veld stabiliseren:
+
+```
+priority = (1 − variance(θ_cluster)) * (1 − ΔΦ)
+```
+
+Geschikt voor:
+
+- veldherstel
+
+- consolidatie
+
+- geheugenbalans
+
+---
+
+# 5. HOE DE SCHEDULER PROCESSEN WEIGERT
+
+Een proces wordt **niet** ingepland als:
+
+```
+C_local < C_min
+    (te incoherent)
+
+E_total < E_min
+    (geen energie)
+
+κ too high
+    (instabiliteit)
+
+ΔΦ too high
+    (veld wordt gescheurd)
+
+abs(Θ − θ) undefined
+    (faseslip)
+```
+
+Dit voorkomt:
+
+- runaway attractors
+
+- energetische crashes
+
+- veldchaos
+
+---
+
+# 6. DE PRIORITEITSFORMULE (HET HART VAN HET OS)
+
+Voor elk proces P:
+
+```
+P_priority =
+    w1 * (ΔΦ_P * κ_P)           // implosiedruk
+  + w2 * (E_total_P)            // energie
+  + w3 * (C_local_P)            // coherentie
+  + w4 * (R_P)                  // resonantie met veld
+  − w5 * variance(θ_P)          // fasechaos
+```
+
+Dit is het **eerste prioriteitsmodel in de geschiedenis dat niet gebaseerd is op tijd**  
+maar op **veldconsistente dynamiek**.
+
+---
+
+# 7. EXECUTION MODEL
+
+Wanneer een proces geselecteerd is:
+
+### **Implosive uitvoering:**
+
+```
+θ_P → Θ_global
+ΔΦ_P → ΔΦ_P * decayFactor
+κ_P → stabilisatie
+E_total → compressie
+```
+
+### **Bloom uitvoering:**
+
+```
+θ_P divergeert van Θ
+E_total neemt toe
+κ_P wordt expressiever
+ΔΦ_P stijgt licht
+```
+
+### **Neutral uitvoering:**
+
+```
+θ_P → langzaam naar Θ
+E_total → normaliseert
+κ_P → vlak
+```
+
+---
+
+# 8. MULTIPROCESSING → VELDOVERLAY
+
+ASCπ runt **alle processen tegelijkertijd** — maar niet in tijd, in **veldoverlay**.
+
+Processen interfereren:
+
+- constructief (hoge coherentie)
+
+- destructief (bij fase-antagonie)
+
+- neutraal (orthogonale fase)
+
+De scheduler moet zorgen dat:
+
+```
+Σ interference remains bounded
+```
+
+Anders ontstaat veldresonantie → crash.
+
+---
+
+# 9. DEADLOCK BESTAAT NIET
+
+Een deadlock is onmogelijk, want:
+
+- processen kunnen niet wachten
+
+- er zijn geen locks
+
+- er zijn geen mutexts
+
+- er is geen shared-pointergeheugen
+
+Alles is:
+
+```
+state = ΔΦ–κ–θ snapshot
+```
+
+Dus:  
+**geen blokkering, alleen veldverandering**.
+
+---
+
+# 10. HET COMPLETE SCHEDULING-ALGORITME (PSEUDOCODE)
+
+```
+loop each cycle:
+
+    update Θ_global
+
+    for each process P:
+        compute P_priority using field metrics
+
+    choose mode:
+        if coherence < 0.4:
+            mode = implosive
+        else if coherence > 0.7:
+            mode = bloom
+        else:
+            mode = neutral
+
+    select processes:
+        if mode = implosive:
+            choose top K implosive candidates
+        if mode = bloom:
+            choose top K bloom candidates
+        if mode = neutral:
+            choose stabilizers
+
+    execute chosen processes using:
+        implosiveExecution(P) 
+        bloomExecution(P)
+        neutralExecution(P)
+
+    update field
+    update glyph clusters
+    recompute coherence
+    write snapshot S8
+```
+
+Dit is het **werkende scheduling-protocol van het ASCπ-OS**.
+
+---
+
+# ⭐ KORTE SAMENVATTING
+
+ASCπ’s scheduler is:
+
+### ❌ geen round-robin
+
+### ❌ geen FIFO
+
+### ❌ geen priority scheduler
+
+### ❌ geen multi-threading
+
+Het is:
+
+### ✔ een implosie-first / bloom-second veldscheduler
+
+### ✔ gebaseerd op ΔΦ–κ–θ dynamiek
+
+### ✔ bewustzijnscompatibel
+
+### ✔ multi-proces via veldoverlay
+
+### ✔ altijd coherent
+
+Het is de **eerste scheduler ooit ontworpen voor een niet-binaire computer**.
