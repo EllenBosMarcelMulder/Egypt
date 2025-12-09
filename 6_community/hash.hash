@@ -1,0 +1,66 @@
+==== ASCp MASTER DOCUMENT.md ==== 
+SHA256 hash of ASCp MASTER DOCUMENT.md:
+0114f60c7b69a25ea0b07608b6b10bb3dfb91f90d6f1e7563c5f33aebd99eeee
+CertUtil: -hashfile command completed successfully.
+==== ASCp Multi-Node Testnet v2.0.md ==== 
+SHA256 hash of ASCp Multi-Node Testnet v2.0.md:
+07633ee26944ad8333f8163bbb0f23d11029e2accc34f2a5972d83655e853733
+CertUtil: -hashfile command completed successfully.
+==== ASCp Multi-Relay Federation Model (ASCp-Fed).md ==== 
+SHA256 hash of ASCp Multi-Relay Federation Model (ASCp-Fed).md:
+1004e5f58969b9c5b1ae88e9e842d43f06ada7686b13cb3811b075ec605ab047
+CertUtil: -hashfile command completed successfully.
+==== ASCp Testnet Dashboard.md ==== 
+SHA256 hash of ASCp Testnet Dashboard.md:
+1998554ed95d0d659cedcd75d73657bd55014368c82b957b15b07bca6a6eb411
+CertUtil: -hashfile command completed successfully.
+==== ASCp Testnet Web Client.md ==== 
+SHA256 hash of ASCp Testnet Web Client.md:
+80e7f071d6f45a6ef5084e91374797a6f2ed321e3105bbe6bdc4c3d53dccc9d8
+CertUtil: -hashfile command completed successfully.
+==== ASCp-CLOAK.md ==== 
+SHA256 hash of ASCp-CLOAK.md:
+1256c34af81a13d455f69298f249535f924a2a92e126fb6ad5d5031ef0748878
+CertUtil: -hashfile command completed successfully.
+==== ASCp-STUDIO.md ==== 
+SHA256 hash of ASCp-STUDIO.md:
+2664fac4960a6fc78e42fc24ba122dab2a66c4e7e3da36cae8febddcb71767ff
+CertUtil: -hashfile command completed successfully.
+==== GITHUB REPOSITORY STRUCTURE (Pi-ECCS).md ==== 
+SHA256 hash of GITHUB REPOSITORY STRUCTURE (Pi-ECCS).md:
+08e5d7a3c648f1e229b8f6711aa46c6966955b249ec2e35e5c2522df83e3f1e4
+CertUtil: -hashfile command completed successfully.
+==== HASHREGISTER.txt ==== 
+CertUtil: -hashfile command FAILED: 0x80070020 (WIN32: 32 ERROR_SHARING_VIOLATION)
+CertUtil: The process cannot access the file because it is being used by another process.
+==== HOMEPAGE - production ready.md ==== 
+SHA256 hash of HOMEPAGE - production ready.md:
+19105a039e7aa6ff93e27100ee941cb20a12848a35b0afe7f9ec290fd4837f11
+CertUtil: -hashfile command completed successfully.
+==== HOMEPAGE.md ==== 
+SHA256 hash of HOMEPAGE.md:
+d50f077778f893918435855ab59b9462f819c738d1d3de7da36a2e11e1709f91
+CertUtil: -hashfile command completed successfully.
+==== index.html ==== 
+SHA256 hash of index.html:
+d965b69b0dccd8ca2706abfdfdd5052046126a2efdb5cd1473ac85b696fdc1b9
+CertUtil: -hashfile command completed successfully.
+==== logo.md ==== 
+CertUtil: -hashfile command FAILED: 0x800703ee (WIN32: 1006 ERROR_FILE_INVALID)
+CertUtil: The volume for a file has been externally altered so that the opened file is no longer valid.
+==== Pi-ECCS Launch Announcement.md ==== 
+SHA256 hash of Pi-ECCS Launch Announcement.md:
+73ddced4a5f11a640ed67338167dba26a07ba0b9cefecddaaa85dac8e3cf341f
+CertUtil: -hashfile command completed successfully.
+==== Pi-ECCS Reference Implementation (JavaScript).js ==== 
+SHA256 hash of Pi-ECCS Reference Implementation (JavaScript).js:
+541736963bbf9422bc78f5439676a02fa3247c69896caa82f1755d203b566a12
+CertUtil: -hashfile command completed successfully.
+==== Pi-ECCS ROADMAP.md ==== 
+SHA256 hash of Pi-ECCS ROADMAP.md:
+b9316e685fb017fc0e28c292d92139f2286167e80405ea9a0774cac68cb2b8cc
+CertUtil: -hashfile command completed successfully.
+==== Pi-ECCS TESTNET v1.0.md ==== 
+SHA256 hash of Pi-ECCS TESTNET v1.0.md:
+d067ae2019594faa30969225a3cd9265f5faf304c11d42877d3b005bbefb2eec
+CertUtil: -hashfile command completed successfully.

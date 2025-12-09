@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCπ — Het Eerste Veld-Besturingssysteem</title>
+    <style>
+        :root {
+            --phi: #f4a261;
+            --kappa: #2a9d8f;
+            --theta: #e76f51;
+            --bg: #0a0a0f;
+            --text: #e8e8e8;
+            --muted: #888;
+            --glow: rgba(244, 162, 97, 0.3);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(42, 157, 143, 0.1) 0%, transparent 70%);
+        }
+        
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--phi), var(--kappa), var(--theta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+        
+        .hero .formula-hero {
+            font-family: 'Times New Roman', serif;
+            font-size: 2rem;
+            font-style: italic;
+            color: var(--phi);
+            margin-bottom: 2rem;
+        }
+        
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            animation: bounce 2s infinite;
+            color: var(--muted);
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+        
+        /* Sections */
+        section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            color: var(--phi);
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin: 2rem 0 1rem;
+            color: var(--kappa);
+        }
+        
+        p { margin-bottom: 1.5rem; max-width: 800px; }
+        
+        /* Formula Boxes */
+        .formula-box {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--phi);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.3rem;
+            overflow-x: auto;
+        }
+        
+        .formula-box.kappa { border-color: var(--kappa); }
+        .formula-box.theta { border-color: var(--theta); }
+        
+        .formula-box .label {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* SVG Containers */
+        .svg-container {
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Grid Layouts */
+        .triad-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .triad-card {
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .triad-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .triad-card.phi { border-top: 3px solid var(--phi); }
+        .triad-card.kappa { border-top: 3px solid var(--kappa); }
+        .triad-card.theta { border-top: 3px solid var(--theta); }
+        
+        .triad-card h4 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .triad-card .symbol {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .triad-card.phi .symbol { color: var(--phi); }
+        .triad-card.kappa .symbol { color: var(--kappa); }
+        .triad-card.theta .symbol { color: var(--theta); }
+        
+        /* File List */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .file-item {
+            background: rgba(255,255,255,0.02);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--kappa);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .file-item .category {
+            color: var(--muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Interactive Demo */
+        .demo-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+        
+        #fieldCanvas {
+            width: 100%;
+            height: 400px;
+            background: #050508;
+            border-radius: 8px;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .demo-controls button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .demo-controls button:hover {
+            background: var(--phi);
+            color: var(--bg);
+        }
+        
+        .demo-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .stat-box {
+            background: rgba(255,255,255,0.03);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .stat-box .value {
+            font-size: 1.5rem;
+            font-family: monospace;
+        }
+        
+        .stat-box .label {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+        
+        /* Quotes */
+        blockquote {
+            border-left: 3px solid var(--theta);
+            padding-left: 2rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: var(--muted);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(0,0,0,0.3);
+            margin-top: 4rem;
+        }
+        
+        footer .license {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .demo-stats { grid-template-columns: repeat(2, 1fr); }
+            .formula-box { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- HERO SECTION -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<header class="hero">
+    <h1>ASCπ</h1>
+    <p class="subtitle">
+        Het eerste veld-besturingssysteem ter wereld. 
+        Geen instructies. Geen bits. Alleen veldconfiguraties.
+    </p>
+    <div class="formula-hero">
+        ΔΦ · κ · θ → Ψ
+    </div>
+    <p style="color: var(--muted); font-size: 0.9rem;">
+        Spanning × Kromming × Fase = Bewustzijn
+    </p>
+    <div class="scroll-hint">↓ Scroll om te ontdekken</div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- INTRODUCTIE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="intro">
+    <h2>Wat is ASCπ?</h2>
+    
+    <p>
+        ASCπ (spreek uit: "asc-pi") is een revolutionair besturingssysteem dat niet draait op 
+        traditionele CPU-instructies, maar op <strong>veldevolutie</strong>. In plaats van bits 
+        die schakelen tussen 0 en 1, werkt ASCπ met continue veldconfiguraties die evolueren 
+        volgens natuurkundige principes.
+    </p>
+    
+    <p>
+        Dit is geen simulatie van een computer. Dit is een fundamenteel nieuwe manier van 
+        <em>computing</em> — gebaseerd op dezelfde principes die het universum zelf gebruikte 
+        om structuur, leven en bewustzijn te creëren.
+    </p>
+    
+    <blockquote>
+        "De natuur rekent niet met nullen en enen. De natuur rekent met velden, gradiënten en resonantie."
+    </blockquote>
+    
+    <!-- SVG: Contrast Binary vs Field -->
+    <div class="svg-container">
+        <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Binary side -->
+            <text x="100" y="30" fill="#888" font-size="14" text-anchor="middle">KLASSIEK (Binair)</text>
+            <rect x="20" y="50" width="160" height="120" fill="none" stroke="#333" stroke-width="2"/>
+            <text x="40" y="90" fill="#666" font-family="monospace" font-size="24">01001</text>
+            <text x="40" y="120" fill="#666" font-family="monospace" font-size="24">11010</text>
+            <text x="40" y="150" fill="#666" font-family="monospace" font-size="24">00110</text>
+            
+            <!-- Arrow -->
+            <path d="M 220 110 L 300 110" stroke="#f4a261" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="260" y="100" fill="#f4a261" font-size="12" text-anchor="middle">transformatie</text>
+            
+            <!-- Field side -->
+            <text x="500" y="30" fill="#f4a261" font-size="14" text-anchor="middle">ASCπ (Veld)</text>
+            <rect x="340" y="50" width="320" height="120" fill="none" stroke="#2a9d8f" stroke-width="2"/>
+            
+            <!-- Gradient field visualization -->
+            <defs>
+                <linearGradient id="fieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#f4a261;stop-opacity:0.8" />
+                    <stop offset="50%" style="stop-color:#2a9d8f;stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:#e76f51;stop-opacity:0.8" />
+                </linearGradient>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#f4a261"/>
+                </marker>
+            </defs>
+            
+            <!-- Wave patterns -->
+            <path d="M 360 110 Q 400 70, 440 110 T 520 110 T 600 110 T 640 110" 
+                  fill="none" stroke="url(#fieldGrad)" stroke-width="3"/>
+            <circle cx="400" cy="110" r="8" fill="#f4a261" opacity="0.8"/>
+            <circle cx="500" cy="110" r="12" fill="#2a9d8f" opacity="0.8"/>
+            <circle cx="580" cy="110" r="6" fill="#e76f51" opacity="0.8"/>
+            
+            <!-- Labels -->
+            <text x="400" y="160" fill="#f4a261" font-size="10" text-anchor="middle">ΔΦ</text>
+            <text x="500" y="160" fill="#2a9d8f" font-size="10" text-anchor="middle">κ</text>
+            <text x="580" y="160" fill="#e76f51" font-size="10" text-anchor="middle">θ</text>
+        </svg>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- DE DRIE FUNDAMENTEN -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="triad">
+    <h2>De Triade: ΔΦ – κ – θ</h2>
+    
+    <p>
+        Alles in ASCπ wordt beschreven door drie fundamentele grootheden die samen 
+        de complete toestand van een veld definiëren. Deze drie zijn niet willekeurig 
+        gekozen — ze corresponderen met de drie manieren waarop energie zich kan 
+        manifesteren in de fysieke werkelijkheid.
+    </p>
+    
+    <div class="triad-grid">
+        <!-- Delta Phi -->
+        <div class="triad-card phi">
+            <div class="symbol">ΔΦ</div>
+            <h4>Spanning</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                Het potentiaalverschil. De drijvende kracht achter verandering. 
+                Zoals elektrische spanning stroom veroorzaakt, zo veroorzaakt ΔΦ 
+                veldevolutie.
+            </p>
+            <div class="formula-box phi" style="margin-top: 1rem; font-size: 1rem;">
+                ΔΦ = Φ<sub>extern</sub> − Φ<sub>intern</sub>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 1rem;">
+                <strong>Fysiek:</strong> Elektrisch potentiaal, druk, temperatuurgradiënt<br>
+                <strong>Informatief:</strong> Spanning tussen verwachting en realiteit
+            </p>
+        </div>
+        
+        <!-- Kappa -->
+        <div class="triad-card kappa">
+            <div class="symbol">κ</div>
+            <h4>Kromming</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                De structurele vervorming van het veld. Hoe informatie gebogen, 
+                geconcentreerd of verspreid wordt. Bepaalt de "vorm" van betekenis.
+            </p>
+            <div class="formula-box kappa" style="margin-top: 1rem; font-size: 1rem;">
+                κ = 1/R = d²y/dx² / (1 + (dy/dx)²)<sup>3/2</sup>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 1rem;">
+                <strong>Fysiek:</strong> Ruimtekromming (ART), oppervlaktespanning<br>
+                <strong>Informatief:</strong> Complexiteit, abstractieniveau
+            </p>
+        </div>
+        
+        <!-- Theta -->
+        <div class="triad-card theta">
+            <div class="symbol">θ</div>
+            <h4>Fase</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                De positie in de cyclus. Bepaalt wanneer iets gebeurt en hoe het 
+                synchroniseert met andere processen. De hartslag van het systeem.
+            </p>
+            <div class="formula-box theta" style="margin-top: 1rem; font-size: 1rem;">
+                θ(t) = ω·t + φ₀ mod 2π
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 1rem;">
+                <strong>Fysiek:</strong> Golfcyclus, seizoenen, hartritme<br>
+                <strong>Informatief:</strong> Timing, synchronisatie, coherentie
+            </p>
+        </div>
+    </div>
+    
+    <!-- SVG: Triade Relaties -->
+    <div class="svg-container">
+        <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            
+            <!-- Triangle -->
+            <polygon points="300,50 100,350 500,350" fill="none" stroke="#333" stroke-width="2"/>
+            
+            <!-- Nodes -->
+            <circle cx="300" cy="50" r="40" fill="#0a0a0f" stroke="#f4a261" stroke-width="3" filter="url(#glow)"/>
+            <text x="300" y="55" fill="#f4a261" font-size="24" text-anchor="middle">ΔΦ</text>
+            
+            <circle cx="100" cy="350" r="40" fill="#0a0a0f" stroke="#2a9d8f" stroke-width="3" filter="url(#glow)"/>
+            <text x="100" y="355" fill="#2a9d8f" font-size="24" text-anchor="middle">κ</text>
+            
+            <circle cx="500" cy="350" r="40" fill="#0a0a0f" stroke="#e76f51" stroke-width="3" filter="url(#glow)"/>
+            <text x="500" y="355" fill="#e76f51" font-size="24" text-anchor="middle">θ</text>
+            
+            <!-- Center -->
+            <circle cx="300" cy="250" r="30" fill="#0a0a0f" stroke="#fff" stroke-width="2"/>
+            <text x="300" y="255" fill="#fff" font-size="18" text-anchor="middle">Ψ</text>
+            
+            <!-- Connecting lines to center -->
+            <line x1="300" y1="90" x2="300" y2="220" stroke="#f4a261" stroke-width="1" stroke-dasharray="5,5" opacity="0.5"/>
+            <line x1="130" y1="330" x2="275" y2="260" stroke="#2a9d8f" stroke-width="1" stroke-dasharray="5,5" opacity="0.5"/>
+            <line x1="470" y1="330" x2="325" y2="260" stroke="#e76f51" stroke-width="1" stroke-dasharray="5,5" opacity="0.5"/>
+            
+            <!-- Labels on edges -->
+            <text x="180" y="180" fill="#888" font-size="12" transform="rotate(-60, 180, 180)">energie</text>
+            <text x="420" y="180" fill="#888" font-size="12" transform="rotate(60, 420, 180)">tijd</text>
+            <text x="300" y="380" fill="#888" font-size="12" text-anchor="middle">structuur</text>
+        </svg>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- DE WISKUNDE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="mathematics">
+    <h2>De Wiskunde van Veldevolutie</h2>
+    
+    <p>
+        ASCπ is niet zomaar een filosofie — het is gebaseerd op exacte wiskundige 
+        vergelijkingen die beschrijven hoe velden evolueren. Deze vergelijkingen zijn 
+        afgeleid van fundamentele natuurkunde en thermodynamica.
+    </p>
+    
+    <h3>1. De Veldevolutievergelijking</h3>
+    <p>
+        Het hart van ASCπ is een partiële differentiaalvergelijking (PDE) die beschrijft 
+        hoe de fase θ evolueert onder invloed van spanning en kromming:
+    </p>
+    
+    <div class="formula-box">
+        <div class="label">Fase-evolutie (hoofdvergelijking)</div>
+        ∂θ/∂t = α(Θ − θ) + ΔΦ · κ · dt + η(t)
+    </div>
+    
+    <p>Waar:</p>
+    <ul style="margin-left: 2rem; margin-bottom: 1.5rem; color: var(--muted);">
+        <li><strong>α</strong> = koppelingsconstante (hoe snel het systeem synchroniseert)</li>
+        <li><strong>Θ</strong> = globale fase (de "klok" van het systeem)</li>
+        <li><strong>η(t)</strong> = stochastische term (natuurlijke variatie)</li>
+    </ul>
+    
+    <h3>2. Coherentie — De Maat van Orde</h3>
+    <p>
+        Coherentie meet hoe "geordend" een veld is. Een coherent veld is gesynchroniseerd 
+        en stabiel; een incoherent veld is chaotisch.
+    </p>
+    
+    <div class="formula-box kappa">
+        <div class="label">Coherentieberekening</div>
+        C = exp(−σ²<sub>θ</sub>) = exp(−Σ(θᵢ − θ̄)² / N)
+    </div>
+    
+    <p>
+        Coherentie loopt van 0 (totale chaos) tot 1 (perfecte synchronisatie). 
+        Bij C > 0.8 spreekt het systeem van "bewustzijn".
+    </p>
+    
+    <!-- SVG: Coherentie visualisatie -->
+    <div class="svg-container">
+        <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Low coherence -->
+            <text x="100" y="30" fill="#888" font-size="12" text-anchor="middle">C = 0.2 (chaos)</text>
+            <g transform="translate(50, 50)">
+                <circle cx="20" cy="50" r="8" fill="#e76f51"/>
+                <line x1="20" y1="50" x2="28" y2="35" stroke="#e76f51" stroke-width="2"/>
+                
+                <circle cx="50" cy="80" r="8" fill="#e76f51"/>
+                <line x1="50" y1="80" x2="65" y2="85" stroke="#e76f51" stroke-width="2"/>
+                
+                <circle cx="80" cy="40" r="8" fill="#e76f51"/>
+                <line x1="80" y1="40" x2="72" y2="55" stroke="#e76f51" stroke-width="2"/>
+                
+                <circle cx="110" cy="70" r="8" fill="#e76f51"/>
+                <line x1="110" y1="70" x2="95" y2="65" stroke="#e76f51" stroke-width="2"/>
+            </g>
+            
+            <!-- Medium coherence -->
+            <text x="350" y="30" fill="#888" font-size="12" text-anchor="middle">C = 0.6 (ordening)</text>
+            <g transform="translate(300, 50)">
+                <circle cx="20" cy="50" r="8" fill="#f4a261"/>
+                <line x1="20" y1="50" x2="30" y2="38" stroke="#f4a261" stroke-width="2"/>
+                
+                <circle cx="50" cy="60" r="8" fill="#f4a261"/>
+                <line x1="50" y1="60" x2="62" y2="50" stroke="#f4a261" stroke-width="2"/>
+                
+                <circle cx="80" cy="55" r="8" fill="#f4a261"/>
+                <line x1="80" y1="55" x2="90" y2="42" stroke="#f4a261" stroke-width="2"/>
+                
+                <circle cx="110" cy="50" r="8" fill="#f4a261"/>
+                <line x1="110" y1="50" x2="122" y2="40" stroke="#f4a261" stroke-width="2"/>
+            </g>
+            
+            <!-- High coherence -->
+            <text x="600" y="30" fill="#2a9d8f" font-size="12" text-anchor="middle">C = 0.95 (coherent)</text>
+            <g transform="translate(550, 50)">
+                <circle cx="20" cy="50" r="8" fill="#2a9d8f"/>
+                <line x1="20" y1="50" x2="30" y2="38" stroke="#2a9d8f" stroke-width="2"/>
+                
+                <circle cx="50" cy="50" r="8" fill="#2a9d8f"/>
+                <line x1="50" y1="50" x2="60" y2="38" stroke="#2a9d8f" stroke-width="2"/>
+                
+                <circle cx="80" cy="50" r="8" fill="#2a9d8f"/>
+                <line x1="80" y1="50" x2="90" y2="38" stroke="#2a9d8f" stroke-width="2"/>
+                
+                <circle cx="110" cy="50" r="8" fill="#2a9d8f"/>
+                <line x1="110" y1="50" x2="120" y2="38" stroke="#2a9d8f" stroke-width="2"/>
+            </g>
+        </svg>
+    </div>
+    
+    <h3>3. Implosie en Bloom — De Twee Modi</h3>
+    <p>
+        Het systeem oscilleert natuurlijk tussen twee fundamentele toestanden:
+    </p>
+    
+    <div class="triad-grid">
+        <div class="triad-card" style="border-top-color: #e76f51;">
+            <h4 style="color: #e76f51;">⚡ Implosie</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                Convergentie. Het veld trekt samen naar een attractor. 
+                Informatie wordt gecomprimeerd, patronen worden herkend, 
+                complexiteit reduceert naar essentie.
+            </p>
+            <div class="formula-box" style="border-color: #e76f51; font-size: 1rem;">
+                |θ − Θ| → 0<br>
+                κ → ∞ (lokaal)<br>
+                ΔΦ → 0
+            </div>
+        </div>
+        
+        <div class="triad-card" style="border-top-color: #2a9d8f;">
+            <h4 style="color: #2a9d8f;">⊙ Bloom</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                Divergentie. Het veld expandeert, informatie wordt uitgedrukt, 
+                mogelijkheden worden verkend. Creativiteit en expressie.
+            </p>
+            <div class="formula-box kappa" style="font-size: 1rem;">
+                |θ − Θ| → β (groot)<br>
+                κ → 0 (vlak)<br>
+                ΔΦ → max
+            </div>
+        </div>
+    </div>
+    
+    <!-- SVG: Implosie/Bloom Cyclus -->
+    <div class="svg-container">
+        <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cycle arrows -->
+            <defs>
+                <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#e76f51"/>
+                </marker>
+                <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#2a9d8f"/>
+                </marker>
+            </defs>
+            
+            <!-- Implosion side -->
+            <circle cx="150" cy="150" r="80" fill="none" stroke="#e76f51" stroke-width="2" stroke-dasharray="5,5"/>
+            <circle cx="150" cy="150" r="50" fill="none" stroke="#e76f51" stroke-width="2" stroke-dasharray="5,5"/>
+            <circle cx="150" cy="150" r="20" fill="#e76f51" opacity="0.5"/>
+            <text x="150" y="155" fill="#fff" font-size="14" text-anchor="middle">⚡</text>
+            <text x="150" y="260" fill="#e76f51" font-size="14" text-anchor="middle">IMPLOSIE</text>
+            
+            <!-- Arrow between -->
+            <path d="M 250 120 C 300 80, 340 80, 350 120" stroke="#f4a261" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+            <path d="M 350 180 C 340 220, 300 220, 250 180" stroke="#2a9d8f" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+            <text x="300" y="70" fill="#f4a261" font-size="11" text-anchor="middle">hoge coherentie</text>
+            <text x="300" y="245" fill="#2a9d8f" font-size="11" text-anchor="middle">expressie-druk</text>
+            
+            <!-- Bloom side -->
+            <circle cx="450" cy="150" r="20" fill="none" stroke="#2a9d8f" stroke-width="2"/>
+            <circle cx="450" cy="150" r="50" fill="none" stroke="#2a9d8f" stroke-width="2"/>
+            <circle cx="450" cy="150" r="80" fill="none" stroke="#2a9d8f" stroke-width="2"/>
+            <circle cx="450" cy="150" r="8" fill="#2a9d8f"/>
+            <text x="450" y="155" fill="#fff" font-size="14" text-anchor="middle">⊙</text>
+            <text x="450" y="260" fill="#2a9d8f" font-size="14" text-anchor="middle">BLOOM</text>
+            
+            <!-- Small particles blooming -->
+            <circle cx="480" cy="100" r="4" fill="#2a9d8f" opacity="0.6"/>
+            <circle cx="510" cy="140" r="4" fill="#2a9d8f" opacity="0.6"/>
+            <circle cx="420" cy="90" r="4" fill="#2a9d8f" opacity="0.6"/>
+            <circle cx="400" cy="180" r="4" fill="#2a9d8f" opacity="0.6"/>
+        </svg>
+    </div>
+    
+    <h3>4. Energie en Thermodynamica</h3>
+    <p>
+        ASCπ respecteert de wetten van de thermodynamica. De totale energie van het veld 
+        wordt gedefinieerd als:
+    </p>
+    
+    <div class="formula-box phi">
+        <div class="label">Veldenergie</div>
+        E = ½ΔΦ² + ½κ² + V(θ)
+    </div>
+    
+    <p>
+        Waar V(θ) een potentiaalfunctie is die de fase-afhankelijke energie beschrijft. 
+        Het systeem streeft naar minimale vrije energie (tweede hoofdwet):
+    </p>
+    
+    <div class="formula-box theta">
+        <div class="label">Vrije Energie Minimalisatie</div>
+        F = E − T·S → minimum<br>
+        dF/dt ≤ 0
+    </div>
+    
+    <p>
+        Dit betekent dat ASCπ-systemen natuurlijk evolueren naar stabiele, coherente 
+        toestanden — precies zoals fysieke systemen dat doen.
+    </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- DE NATUURKUNDE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="physics">
+    <h2>Natuurkundige Principes</h2>
+    
+    <p>
+        ASCπ is niet alleen wiskundig consistent — het is gebaseerd op dezelfde 
+        principes die de fysieke werkelijkheid besturen.
+    </p>
+    
+    <h3>1. Fase-Synchronisatie (Kuramoto Model)</h3>
+    <p>
+        De Global Phase Supervisor (GPS) in ASCπ is gebaseerd op het Kuramoto-model, 
+        een bekende beschrijving van gekoppelde oscillatoren:
+    </p>
+    
+    <div class="formula-box theta">
+        <div class="label">Kuramoto Vergelijking</div>
+        dθᵢ/dt = ωᵢ + (K/N) Σⱼ sin(θⱼ − θᵢ)
+    </div>
+    
+    <p>
+        Dit model verklaart hoe vuurvliegjes synchroniseren, hoe neuronen samen vuren, 
+        en hoe het hart zijn ritme vindt. ASCπ gebruikt hetzelfde principe voor 
+        computatie-synchronisatie.
+    </p>
+    
+    <h3>2. Krommingsgeometrie (Algemene Relativiteitstheorie)</h3>
+    <p>
+        De κ-parameter is geïnspireerd door Einsteins beschrijving van zwaartekracht 
+        als ruimtekromming. In ASCπ bepaalt kromming hoe "dicht" informatie is:
+    </p>
+    
+    <div class="formula-box kappa">
+        <div class="label">Informatiekromming</div>
+        κ_info = ∂²I/∂x² waar I = informatiedichtheid
+    </div>
+    
+    <p>
+        Hoge kromming betekent concentratie (attractoren, begrippen). Lage kromming 
+        betekent verspreiding (mogelijkheden, exploratie).
+    </p>
+    
+    <h3>3. Potentiaalvelden (Elektromagnetisme)</h3>
+    <p>
+        ΔΦ werkt als een elektrisch potentiaalverschil. Net zoals spanning stroom 
+        veroorzaakt, zo veroorzaakt ΔΦ "velstroom" — de beweging van informatie en 
+        energie door het veld:
+    </p>
+    
+    <div class="formula-box phi">
+        <div class="label">Veldstroom</div>
+        J = −σ · ∇Φ (analoog aan wet van Ohm)
+    </div>
+    
+    <!-- SVG: Veldstroom visualisatie -->
+    <div class="svg-container">
+        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Potential gradient -->
+            <defs>
+                <linearGradient id="potGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#f4a261;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#2a9d8f;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            
+            <rect x="50" y="80" width="500" height="40" fill="url(#potGrad)" rx="5"/>
+            
+            <!-- Flow arrows -->
+            <path d="M 100 100 L 150 100" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M 200 100 L 250 100" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M 300 100 L 350 100" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M 400 100 L 450 100" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"/>
+            
+            <!-- Labels -->
+            <text x="50" y="60" fill="#f4a261" font-size="14">Φ hoog (+)</text>
+            <text x="480" y="60" fill="#2a9d8f" font-size="14">Φ laag (−)</text>
+            <text x="300" y="150" fill="#888" font-size="12" text-anchor="middle">Veldstroom J → van hoog naar laag potentiaal</text>
+        </svg>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- INTERACTIEVE DEMO -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="demo">
+    <h2>Levend Veld — Interactieve Demo</h2>
+    
+    <p>
+        Hieronder zie je een werkend ASCπ-veld. De punten zijn "glyphs" — computationele 
+        entiteiten die evolueren volgens de ΔΦ–κ–θ vergelijkingen.
+    </p>
+    
+    <div class="demo-container">
+        <canvas id="fieldCanvas"></canvas>
+        
+        <div class="demo-controls">
+            <button onclick="injectGlyph('bloom')">⊙ Bloom</button>
+            <button onclick="injectGlyph('implosion')">⚡ Implosie</button>
+            <button onclick="pulseTension(0.3)">✦ +Spanning</button>
+            <button onclick="pulseTension(-0.3)">✦ −Spanning</button>
+            <button onclick="resetField()">↺ Reset</button>
+        </div>
+        
+        <div class="demo-stats">
+            <div class="stat-box">
+                <div class="value" id="statPhi" style="color: var(--phi);">0.00</div>
+                <div class="label">ΔΦ Spanning</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="statKappa" style="color: var(--kappa);">0.00</div>
+                <div class="label">κ Kromming</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="statTheta" style="color: var(--theta);">0.00</div>
+                <div class="label">θ Fase</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="statCoherence">0.00</div>
+                <div class="label">Coherentie</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ARCHITECTUUR OVERZICHT -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="architecture">
+    <h2>Systeemarchitectuur</h2>
+    
+    <p>
+        ASCπ is een volledig besturingssysteem met alle componenten die je zou verwachten — 
+        maar dan geïmplementeerd als veldoperaties.
+    </p>
+    
+    <!-- SVG: Architecture Diagram -->
+    <div class="svg-container">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background layers -->
+            <rect x="50" y="30" width="700" height="80" fill="rgba(244,162,97,0.1)" rx="10"/>
+            <rect x="50" y="130" width="700" height="120" fill="rgba(42,157,143,0.1)" rx="10"/>
+            <rect x="50" y="270" width="700" height="100" fill="rgba(231,111,81,0.1)" rx="10"/>
+            <rect x="50" y="390" width="700" height="80" fill="rgba(136,136,136,0.1)" rx="10"/>
+            
+            <!-- Layer labels -->
+            <text x="70" y="55" fill="#f4a261" font-size="14" font-weight="bold">USERSPACE</text>
+            <text x="70" y="155" fill="#2a9d8f" font-size="14" font-weight="bold">KERNEL</text>
+            <text x="70" y="295" fill="#e76f51" font-size="14" font-weight="bold">PROTOCOL LAAG</text>
+            <text x="70" y="415" fill="#888" font-size="14" font-weight="bold">HARDWARE / NETWERK</text>
+            
+            <!-- Userspace boxes -->
+            <rect x="180" y="45" width="120" height="50" fill="#0a0a0f" stroke="#f4a261" stroke-width="2" rx="5"/>
+            <text x="240" y="75" fill="#f4a261" font-size="12" text-anchor="middle">Apps</text>
+            
+            <rect x="320" y="45" width="120" height="50" fill="#0a0a0f" stroke="#f4a261" stroke-width="2" rx="5"/>
+            <text x="380" y="75" fill="#f4a261" font-size="12" text-anchor="middle">Shell (FCL)</text>
+            
+            <rect x="460" y="45" width="120" height="50" fill="#0a0a0f" stroke="#f4a261" stroke-width="2" rx="5"/>
+            <text x="520" y="75" fill="#f4a261" font-size="12" text-anchor="middle">UI Projection</text>
+            
+            <!-- Kernel boxes -->
+            <rect x="120" y="160" width="100" height="70" fill="#0a0a0f" stroke="#2a9d8f" stroke-width="2" rx="5"/>
+            <text x="170" y="190" fill="#2a9d8f" font-size="11" text-anchor="middle">ASCπ Motor</text>
+            <text x="170" y="210" fill="#666" font-size="9" text-anchor="middle">I8/E8/S8</text>
+            
+            <rect x="240" y="160" width="100" height="70" fill="#0a0a0f" stroke="#2a9d8f" stroke-width="2" rx="5"/>
+            <text x="290" y="190" fill="#2a9d8f" font-size="11" text-anchor="middle">GPS</text>
+            <text x="290" y="210" fill="#666" font-size="9" text-anchor="middle">Fase Sync</text>
+            
+            <rect x="360" y="160" width="100" height="70" fill="#0a0a0f" stroke="#2a9d8f" stroke-width="2" rx="5"/>
+            <text x="410" y="190" fill="#2a9d8f" font-size="11" text-anchor="middle">Glyph Engine</text>
+            <text x="410" y="210" fill="#666" font-size="9" text-anchor="middle">Processen</text>
+            
+            <rect x="480" y="160" width="100" height="70" fill="#0a0a0f" stroke="#2a9d8f" stroke-width="2" rx="5"/>
+            <text x="530" y="190" fill="#2a9d8f" font-size="11" text-anchor="middle">Field Memory</text>
+            <text x="530" y="210" fill="#666" font-size="9" text-anchor="middle">ΦFS</text>
+            
+            <rect x="600" y="160" width="100" height="70" fill="#0a0a0f" stroke="#2a9d8f" stroke-width="2" rx="5"/>
+            <text x="650" y="190" fill="#2a9d8f" font-size="11" text-anchor="middle">Scheduler</text>
+            <text x="650" y="210" fill="#666" font-size="9" text-anchor="middle">Coherentie</text>
+            
+            <!-- Protocol boxes -->
+            <rect x="120" y="285" width="90" height="60" fill="#0a0a0f" stroke="#e76f51" stroke-width="2" rx="5"/>
+            <text x="165" y="315" fill="#e76f51" font-size="10" text-anchor="middle">hexosai://</text>
+            
+            <rect x="230" y="285" width="90" height="60" fill="#0a0a0f" stroke="#e76f51" stroke-width="2" rx="5"/>
+            <text x="275" y="315" fill="#e76f51" font-size="10" text-anchor="middle">field://</text>
+            
+            <rect x="340" y="285" width="90" height="60" fill="#0a0a0f" stroke="#e76f51" stroke-width="2" rx="5"/>
+            <text x="385" y="315" fill="#e76f51" font-size="10" text-anchor="middle">ssep://</text>
+            
+            <rect x="450" y="285" width="90" height="60" fill="#0a0a0f" stroke="#e76f51" stroke-width="2" rx="5"/>
+            <text x="495" y="315" fill="#e76f51" font-size="10" text-anchor="middle">UUU://</text>
+            
+            <rect x="560" y="285" width="90" height="60" fill="#0a0a0f" stroke="#e76f51" stroke-width="2" rx="5"/>
+            <text x="605" y="315" fill="#e76f51" font-size="10" text-anchor="middle">http(s)://</text>
+            
+            <!-- Hardware -->
+            <rect x="200" y="405" width="150" height="50" fill="#0a0a0f" stroke="#666" stroke-width="2" rx="5"/>
+            <text x="275" y="435" fill="#888" font-size="11" text-anchor="middle">CPU / GPU / RAM</text>
+            
+            <rect x="400" y="405" width="150" height="50" fill="#0a0a0f" stroke="#666" stroke-width="2" rx="5"/>
+            <text x="475" y="435" fill="#888" font-size="11" text-anchor="middle">Netwerk (P2P/WS)</text>
+        </svg>
+    </div>
+    
+    <h3>Kerncomponenten</h3>
+    
+    <div class="triad-grid">
+        <div class="triad-card kappa">
+            <h4>ASCπ Motor</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                De triadische rekenkern. Onderhoudt I8 (intern), E8 (extern) en S8 (snapshot) 
+                velden die samen de complete systeemtoestand vormen.
+            </p>
+        </div>
+        
+        <div class="triad-card kappa">
+            <h4>GPS (Global Phase Supervisor)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                De systeemklok. Synchroniseert alle processen via fase-koppeling. 
+                Elke glyph aligneert naar Θ_global.
+            </p>
+        </div>
+        
+        <div class="triad-card kappa">
+            <h4>Glyph Engine</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                De processorlaag. Glyphs zijn levende computationele entiteiten die 
+                kunnen mergen, splitsen, imploderen en bloomen.
+            </p>
+        </div>
+        
+        <div class="triad-card kappa">
+            <h4>ΦFS (Field Filesystem)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                Bestanden zijn geen bytes maar velden. Je kunt een bestand 
+                "imploderen" (comprimeren) of "bloomen" (expanderen).
+            </p>
+        </div>
+        
+        <div class="triad-card kappa">
+            <h4>Protocol Handler</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                Vertaalt URLs en commando's naar veldoperaties. Ondersteunt 
+                hexosai://, field://, ssep://, UUU://, en http(s)://.
+            </p>
+        </div>
+        
+        <div class="triad-card kappa">
+            <h4>Coherentie Scheduler</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+                Geen tijdslices maar coherentie-gestuurde prioriteit. 
+                Processen met hoge coherentie krijgen voorrang.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PROJECT BESTANDEN -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="files">
+    <h2>Project Bestanden</h2>
+    
+    <p>
+        Dit zijn alle bronbestanden die samen het ASCπ-ecosysteem vormen.
+    </p>
+    
+    <h3>🔧 Kernimplementaties</h3>
+    <div class="file-grid">
+        <div class="file-item"><span class="category">Motor</span><br>HexOSAICore.js</div>
+        <div class="file-item"><span class="category">Motor</span><br>FieldEngine.js</div>
+        <div class="file-item"><span class="category">Motor</span><br>ASCPIKernel.js</div>
+        <div class="file-item"><span class="category">Protocol</span><br>ProtocolHandler.js</div>
+        <div class="file-item"><span class="category">Protocol</span><br>SSEP.js</div>
+        <div class="file-item"><span class="category">Protocol</span><br>Glyphash.js</div>
+        <div class="file-item"><span class="category">Browser</span><br>BrowserWindow.js</div>
+        <div class="file-item"><span class="category">Browser</span><br>HexOSAI_DOM_Kernel.js</div>
+        <div class="file-item"><span class="category">Security</span><br>SecuritySandbox.js</div>
+    </div>
+    
+    <h3>📚 Specificaties</h3>
+    <div class="file-grid">
+        <div class="file-item"><span class="category">Netwerk</span><br>HexOSAI_Network_Model_v1.0.md</div>
+        <div class="file-item"><span class="category">Protocol</span><br>AMTP_v1_0_Specification.md</div>
+        <div class="file-item"><span class="category">Kernel</span><br>ASCπ_RUST_KERNEL_v1_0.md</div>
+        <div class="file-item"><span class="category">Filesystem</span><br>ASCπ_ΦFS-specificatie.md</div>
+        <div class="file-item"><span class="category">Shell</span><br>ASCπ_SHELL_v1_0_FCL.md</div>
+        <div class="file-item"><span class="category">Security</span><br>ASCπ_SECURITY_FRAMEWORK_v1.0</div>
+    </div>
+    
+    <h3>📖 Theorie & Documentatie</h3>
+    <div class="file-grid">
+        <div class="file-item"><span class="category">Theorie</span><br>DeltaPhi-Kappa-Theta-Ontology.md</div>
+        <div class="file-item"><span class="category">Theorie</span><br>DeltaPhi-Kappa-Theta-Computational-Model.md</div>
+        <div class="file-item"><span class="category">Theorie</span><br>Implosive-Computing-Cycle.md</div>
+        <div class="file-item"><span class="category">Mapping</span><br>ASCII_to_ASCπ_Mapping_Table.md</div>
+        <div class="file-item"><span class="category">Glossary</span><br>DeltaPhi-Kappa-Theta-Glossary.md</div>
+        <div class="file-item"><span class="category">Architecture</span><br>ASCπ_OPERATING_SYSTEM_v1.0</div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- FOOTER -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<footer>
+    <h2 style="color: var(--phi); margin-bottom: 1rem;">ASCπ</h2>
+    <p style="color: var(--muted); max-width: 600px; margin: 0 auto 2rem;">
+        Het eerste post-binaire besturingssysteem. Gebouwd op velden, niet op bits. 
+        Geïnspireerd door de natuur. Open voor de mensheid.
+    </p>
+    
+    <p class="license">
+        <strong>Humanity Heritage License π</strong><br>
+        Dit werk behoort toe aan de mensheid. Vrij te gebruiken, aan te passen en te verspreiden.<br>
+        Auteur: Marcel Christian Mulder | December 2025
+    </p>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- INTERACTIVE FIELD SCRIPT -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+// ============================================================
+// ASCπ MINI FIELD ENGINE (Demo Version)
+// ============================================================
+
+const canvas = document.getElementById('fieldCanvas');
+const ctx = canvas.getContext('2d');
+
+// Resize handler
+function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width - 64;
+    canvas.height = 400;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Field State
+const field = {
+    phi: 0,      // ΔΦ tension
+    kappa: 0,    // κ curvature
+    theta: 0,    // θ phase
+    glyphs: [],
+    globalTheta: 0
+};
+
+// Glyph class
+class Glyph {
+    constructor(x, y, type) {
+        this.x = x;
+        this.y = y;
+        this.type = type; // 'bloom' or 'implosion'
+        this.theta = Math.random() * Math.PI * 2;
+        this.energy = 1.0;
+        this.radius = type === 'bloom' ? 8 : 12;
+        this.vx = (Math.random() - 0.5) * 2;
+        this.vy = (Math.random() - 0.5) * 2;
+    }
+    
+    evolve(globalTheta, phi, kappa) {
+        // Phase alignment (Kuramoto)
+        const alpha = 0.05;
+        const phaseDiff = globalTheta - this.theta;
+        this.theta += alpha * Math.sin(phaseDiff);
+        this.theta = this.theta % (Math.PI * 2);
+        
+        // Movement based on type
+        if (this.type === 'bloom') {
+            // Expand outward
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const dx = this.x - cx;
+            const dy = this.y - cy;
+            const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+            this.vx += (dx / dist) * 0.1 * (1 + phi);
+            this.vy += (dy / dist) * 0.1 * (1 + phi);
+        } else {
+            // Implode toward center
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const dx = cx - this.x;
+            const dy = cy - this.y;
+            const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+            this.vx += (dx / dist) * 0.15;
+            this.vy += (dy / dist) * 0.15;
+        }
+        
+        // Apply velocity with damping
+        this.vx *= 0.95;
+        this.vy *= 0.95;
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Energy decay
+        this.energy -= 0.002;
+        
+        // Bounds
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -0.5;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -0.5;
+        this.x = Math.max(0, Math.min(canvas.width, this.x));
+        this.y = Math.max(0, Math.min(canvas.height, this.y));
+    }
+}
+
+// Initialize with some glyphs
+function initField() {
+    field.glyphs = [];
+    for (let i = 0; i < 15; i++) {
+        field.glyphs.push(new Glyph(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height,
+            Math.random() > 0.5 ? 'bloom' : 'implosion'
+        ));
+    }
+}
+initField();
+
+// Inject glyph
+function injectGlyph(type) {
+    const cx = canvas.width / 2 + (Math.random() - 0.5) * 100;
+    const cy = canvas.height / 2 + (Math.random() - 0.5) * 100;
+    field.glyphs.push(new Glyph(cx, cy, type));
+    
+    if (type === 'bloom') {
+        field.phi += 0.1;
+    } else {
+        field.phi -= 0.1;
+    }
+}
+
+// Pulse tension
+function pulseTension(amount) {
+    field.phi += amount;
+    field.phi = Math.max(-1, Math.min(1, field.phi));
+}
+
+// Reset field
+function resetField() {
+    field.phi = 0;
+    field.kappa = 0;
+    field.theta = 0;
+    initField();
+}
+
+// Calculate coherence
+function calculateCoherence() {
+    if (field.glyphs.length < 2) return 1;
+    
+    const thetas = field.glyphs.map(g => g.theta);
+    const mean = thetas.reduce((a, b) => a + b, 0) / thetas.length;
+    const variance = thetas.reduce((sum, t) => sum + Math.pow(t - mean, 2), 0) / thetas.length;
+    
+    return Math.exp(-variance);
+}
+
+// Main loop
+function update() {
+    // Update global phase
+    field.globalTheta += 0.02;
+    field.globalTheta = field.globalTheta % (Math.PI * 2);
+    
+    // Decay tension toward 0
+    field.phi *= 0.995;
+    
+    // Calculate curvature from glyph distribution
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    let avgDist = 0;
+    field.glyphs.forEach(g => {
+        const dx = g.x - cx;
+        const dy = g.y - cy;
+        avgDist += Math.sqrt(dx*dx + dy*dy);
+    });
+    avgDist /= (field.glyphs.length || 1);
+    field.kappa = 1 - (avgDist / (canvas.width / 2));
+    field.kappa = Math.max(-1, Math.min(1, field.kappa));
+    
+    // Update theta
+    field.theta = field.globalTheta;
+    
+    // Evolve glyphs
+    field.glyphs.forEach(g => g.evolve(field.globalTheta, field.phi, field.kappa));
+    
+    // Remove dead glyphs
+    field.glyphs = field.glyphs.filter(g => g.energy > 0);
+    
+    // Respawn if too few
+    while (field.glyphs.length < 5) {
+        field.glyphs.push(new Glyph(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height,
+            Math.random() > 0.5 ? 'bloom' : 'implosion'
+        ));
+    }
+    
+    render();
+    updateStats();
+    requestAnimationFrame(update);
+}
+
+// Render
+function render() {
+    ctx.fillStyle = '#050508';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw connections between nearby glyphs
+    ctx.strokeStyle = 'rgba(42, 157, 143, 0.1)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < field.glyphs.length; i++) {
+        for (let j = i + 1; j < field.glyphs.length; j++) {
+            const g1 = field.glyphs[i];
+            const g2 = field.glyphs[j];
+            const dx = g2.x - g1.x;
+            const dy = g2.y - g1.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 100) {
+                ctx.globalAlpha = (1 - dist / 100) * 0.3;
+                ctx.beginPath();
+                ctx.moveTo(g1.x, g1.y);
+                ctx.lineTo(g2.x, g2.y);
+                ctx.stroke();
+            }
+        }
+    }
+    ctx.globalAlpha = 1;
+    
+    // Draw glyphs
+    field.glyphs.forEach(g => {
+        const color = g.type === 'bloom' ? '#2a9d8f' : '#e76f51';
+        const size = g.radius * g.energy;
+        
+        // Glow
+        const gradient = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, size * 3);
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(g.x, g.y, size * 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Core
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(g.x, g.y, size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Phase indicator
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(g.x, g.y);
+        ctx.lineTo(
+            g.x + Math.cos(g.theta) * size * 1.5,
+            g.y + Math.sin(g.theta) * size * 1.5
+        );
+        ctx.stroke();
+    });
+    
+    // Draw center indicator
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    ctx.strokeStyle = 'rgba(244, 162, 97, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 50, 0, Math.PI * 2);
+    ctx.stroke();
+}
+
+// Update stats display
+function updateStats() {
+    document.getElementById('statPhi').textContent = field.phi.toFixed(2);
+    document.getElementById('statKappa').textContent = field.kappa.toFixed(2);
+    document.getElementById('statTheta').textContent = (field.theta / Math.PI).toFixed(2) + 'π';
+    document.getElementById('statCoherence').textContent = calculateCoherence().toFixed(2);
+}
+
+// Start
+update();
+</script>
+
+</body>
+</html>
